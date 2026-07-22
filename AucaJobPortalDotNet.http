@@ -1,0 +1,6 @@
+@AucaJobPortalDotNet_HostAddress = http://localhost:5022
+
+GET {{AucaJobPortalDotNet_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
