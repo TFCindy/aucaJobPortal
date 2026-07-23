@@ -45,4 +45,7 @@ public class Job
     public virtual Employer Employer{get;set;}=null!;
     public virtual User? ApprovedByNavigation{get;set;}
 
+    public virtual ICollection<Application> Applications{get;set;}=[];
+    public virtual ICollection<SavedJob> SavedJobs{get;set;}=[];
+
 }

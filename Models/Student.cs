@@ -33,4 +33,6 @@ public class Student
     [Column("email_notifications_enabled")]
     public bool EmailNotificationsEnabled{get;set;}=true;
     public virtual User User{get;set;}=null!;
+    public ICollection<Application> Applications{ get; set; } = [];
+    public virtual ICollection<SavedJob> SavedJobs{get;set;}=[];
 }

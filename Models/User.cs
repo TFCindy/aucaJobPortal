@@ -41,7 +41,11 @@ public class User
 
     public Employer? Employer{get;set;}
 
-
-
+    public virtual ICollection<Notification> Notifications{get;set;}=[];
+    public virtual ICollection<Message> SentMessages{get;set;}=[];
+    public virtual ICollection<Message> ReceivedMessages{get;set;}=[];
+    public virtual ICollection<PasswordResetLog> PasswordResetLogs{get;set;}=[];
+    public virtual ICollection<EmailLog> EmailLogs{get;set;}=[];
+    public virtual ICollection<AuditLog> AuditLogs { get; set; } = [];
 
 }

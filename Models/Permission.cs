@@ -14,4 +14,5 @@ public class Permission
     public string? Category{get;set;}
    [Column("created_at")]
     public DateTime CreatedAt{get;private set;}
+    public virtual ICollection<RolePermission> RolePermissions{get;set;}=[];
 }

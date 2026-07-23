@@ -33,4 +33,6 @@ public class Employer
     public bool EmailNotificationsEnabled{get;set;}=true;
 
     public virtual User User{get;set;}=null!;
+    public virtual ICollection<Job> Jobs{get;set;}=[];
+
 }

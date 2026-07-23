@@ -15,4 +15,6 @@ public class Role
     public bool IsSystemRole{get;set;}=false;//when u create a new role,it is user created not system/built_in
     [Column("created_at")]
     public DateTime CreatedAt{get;private set;}=DateTime.UtcNow;
+    public ICollection<User> Users{get;set;}=[];
+    public virtual ICollection<RolePermission> RolePermissions{get;set;}=[];
 }
