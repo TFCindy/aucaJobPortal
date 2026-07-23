@@ -2,7 +2,7 @@
 
 namespace AucaJobPortalDotNet.Models;
 [Table("saved_jobs")]
-public class SavedJOb
+public class SavedJob
 {
     [Column("id")]
     public int Id{get;private set;}

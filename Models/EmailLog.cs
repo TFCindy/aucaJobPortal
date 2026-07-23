@@ -2,7 +2,7 @@
 
 namespace AucaJobPortalDotNet.Models;
 [Table("email_logs")]
-public class EmailLogs
+public class EmailLog
 {
     [Column("id")]
     public int Id{get;private set;}
