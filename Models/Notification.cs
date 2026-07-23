@@ -19,4 +19,6 @@ public class{
     public bool IsRead{get; set;}=false;
     [Column("created_At")]
     public DateTime CreatedAt{get;private set;}=DateTime.UtcNow;
+    public virtual User User{get;set;}=null!;
+    public virtual Application? Application{get;set;}
 }
