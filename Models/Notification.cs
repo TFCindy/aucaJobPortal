@@ -2,7 +2,8 @@
 
 namespace AucaJobPortalDotNet.Models;
 [Table("notifications")]
-public class{
+public class Notification{
+    
     [Column("id")]
     public int Id{get;private set;}
     [Column("user_id")]
