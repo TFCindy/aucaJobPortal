@@ -15,5 +15,5 @@ public class Employer
     public string? VerificationDocumentPath{get;set;}
     public bool EmailNotificationsEnabled{get;set;}=true;
 
-    public User User{get;set;}=null!;
+    public virtual User User{get;set;}=null!;
 }

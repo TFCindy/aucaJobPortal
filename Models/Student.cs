@@ -15,4 +15,5 @@ public class Student
     public string? Faculty{get;set;}
     public string? Department{get;set;}
     public bool EmailNotificationsEnabled{get;set;}=true;
+    public virtual User User{get;set;}=null!;
 }
