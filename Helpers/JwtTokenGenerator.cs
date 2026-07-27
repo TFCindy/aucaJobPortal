@@ -12,7 +12,7 @@ public class JwtTokenGenerator
         _configuration=configuration;
     }
 
-    public string GenerateToken(int userId,string email,string roleName,int roleId)
+    public string GenerateToken(int userId,string email,int roleId,string roleName)
     {
         var jwtSettings=_configuration.GetSection("Jwt");
         var secret=jwtSettings["Secret"]?? throw new InvalidOperationException("JWT Secret not configured");
