@@ -48,5 +48,6 @@ public class User
     public virtual ICollection<EmailLog> EmailLogs{get;set;}=[];
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = [];
     public virtual ICollection<Application> ReviewedApplications{get;set;}=[];
+    public virtual ICollection<Job> ApprovedJobs {get;set;}=[];
 
 }
