@@ -9,6 +9,6 @@ public class RegisterStudentDTO
     public string? Department{get;set;}
     public string? Phone{get;set;}
     public string Password{get;set;}=string.Empty;
-    public string? YearOfStudy{get;set;}
-    public string? GraduationYear{get;set;}
+    public int? YearOfStudy{get;set;}
+    public int? GraduationYear{get;set;}
 }
