@@ -1,5 +1,5 @@
 namespace AucaJobPortalDotNet.DTOs;
-public class RegisterEmplyerDTO
+public class RegisterEmployerDTO
 {
     public string Emai{get;set;}=string.Empty;
     public string Password{get;set;}=string.Empty;
