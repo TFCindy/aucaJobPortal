@@ -33,7 +33,7 @@ public class User
     [Column("email_verification_token")]
     public string? EmailVerificationToken{get;set;}//can be null when the user email has already been verified or the token has expired
     [Column("email_verification_expires")]
-    public DateTime? EmailVerifificationExpires{ get; set; } //can be null when No active token (email already verified)
+    public DateTime? EmailVerificationExpires{ get; set; } //can be null when No active token (email already verified)
     [Column("role_id")]
     public int RoleId{get;set;}
     public virtual Role Role{get;set;}=null!;
