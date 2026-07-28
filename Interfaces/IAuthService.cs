@@ -4,8 +4,8 @@ namespace AucaJobPortalDotNet.Interfaces;
 public interface IAuthService
 {
     Task<AuthResponseDTO> LoginAsync(LoginRequestDTO dto);
-    Task<string> RegisterStudentAsync(RegisterStudentDTO dto);
-    Task<string> RegisterEmployerAsync(RegisterEmployerDTO dto);
-    Task<string> VerifyEmailAsync(string token);
+    Task<AuthResponseDTO> RegisterStudentAsync(RegisterStudentDTO dto);
+    Task<AuthResponseDTO> RegisterEmployerAsync(RegisterEmployerDTO dto);
+    Task<AuthResponseDTO> VerifyEmailAsync(string token);
 
 }
