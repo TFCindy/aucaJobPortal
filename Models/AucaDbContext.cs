@@ -43,7 +43,7 @@ public class AucaDbContext : DbContext
        .HasOne(a => a.LastReviewedByNavigation)//LastReviewedByNavigation is the actual User object,thats why we dont use lastRevieweBy which is just a string
        .WithMany(u => u.ReviewedApplications)
        .HasForeignKey(a => a.LastReviewedBy)
-       .OnDelete(DeleteBehavior.SetNull);
+       .OnDelete(DeleteBehavior.NoAction);
 
        modelBuilder.Entity<Job>()
        .HasOne( j=> j.Employer)
@@ -146,7 +146,7 @@ public class AucaDbContext : DbContext
       modelBuilder.Entity<Permission>()
       .HasIndex(p=>p.Name)
       .IsUnique();
-      
+
 
 
 

@@ -23,7 +23,7 @@ public class Application
     [Column("interview_date")]
     public DateTime? InterviewDate{get;set;}
     [Column("last_reviewed_by")]
-    public string? LastReviewedBy{get;set;}
+    public int? LastReviewedBy{get;set;}
     [Column("cv_file_path")]
     public string? CvFilePath{get;set;}
     [Column("professional_experience")]

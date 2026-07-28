@@ -2,7 +2,7 @@
 
 namespace AucaJobPortalDotNet.Models;
 
-[Table("role")]
+[Table("roles")]
 public class Role
 {
     [Column("id")]
