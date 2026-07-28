@@ -29,7 +29,7 @@ public class Employer
     public DateTime CreatedAt{get;private set;}=DateTime.UtcNow;
     [Column("verification_document_path")]
     public string? VerificationDocumentPath{get;set;}
-    [Column("email_notification_enabled")]
+    [Column("email_notifications_enabled")]
     public bool EmailNotificationsEnabled{get;set;}=true;
 
     public virtual User User{get;set;}=null!;
