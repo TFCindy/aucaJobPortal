@@ -20,6 +20,7 @@ builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddScoped<PasswordHasher>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
 
 // ── Database ──────────────────────────────────────────────────────────
 builder.Services.AddDbContext<AucaDbContext>(options =>
