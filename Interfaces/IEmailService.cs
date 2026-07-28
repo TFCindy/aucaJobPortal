@@ -1,4 +1,4 @@
-namespace AucaJobPortalDotNet.Services.Interfaces;
+namespace AucaJobPortalDotNet.Interfaces;
 
 public interface IEmailService
 {
