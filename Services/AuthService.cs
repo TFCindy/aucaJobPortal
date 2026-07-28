@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using AucaJobPortalDotNet.DTOs;
 using AucaJobPortalDotNet.Helpers;
 using AucaJobPortalDotNet.Models;
-using AucaJobPortalDotNet.Services.Interfaces;
 using AucaJobPortalDotNet.Interfaces;
 
 

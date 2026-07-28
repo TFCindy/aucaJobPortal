@@ -1,7 +1,8 @@
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
-using AucaJobPortalDotNet.Services.Interfaces;
+using AucaJobPortalDotNet.Interfaces;
+
 
 namespace AucaJobPortalDotNet.Services;
 
