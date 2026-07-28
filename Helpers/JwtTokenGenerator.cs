@@ -23,7 +23,7 @@ public class JwtTokenGenerator
         var claims=new List<Claim>
         {
             new Claim("userId" , userId.ToString()),
-            new Claim(ClaimTypes.Email, email),
+            new Claim("email", email) ,
             new Claim("roleId", roleId.ToString()),
             new Claim("roleName",roleName)
         };
