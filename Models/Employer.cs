@@ -12,7 +12,7 @@ public class Employer
     [Column("company_name")]
     public string CompanyName{get;set;}=string.Empty;
     [Column("company_description")]
-    public string? CompanyDescription{get;set;}
+    public string CompanyDescription{get;set;}=string.Empty;
     [Column("company_website")]
     public string? CompanyWebsite{get;set;}
     [Column("industry")]
@@ -20,7 +20,7 @@ public class Employer
     [Column("company_size")]
     public string? CompanySize{get;set;}
     [Column("headquarters")]
-    public string? Headquarters{get;set;}
+    public string Location{get;set;}=string.Empty;
     [Column("company_logo")]
     public string? CompanyLogo{get;set;}
     [Column("verified")]
