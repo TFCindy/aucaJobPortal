@@ -20,8 +20,7 @@ public class Job
     public string? Location{get;set;}
     [Column("job_type")]
     public string? JobType{get;set;}
-    [Column("salary_range")]
-    public string? SalaryRange{get;set;}
+   
     [Column("experience_level")]
     public string? ExperienceLevel{get;set;}
     [Column("deadline")]
