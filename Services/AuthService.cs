@@ -152,7 +152,7 @@ public class AuthService : IAuthService
             {
                 Email = dto.Email.ToLower(),
                 PasswordHash = hashedPassword,
-                FullName = dto.FullName,
+                FullName = dto.CompanyName,
                 Phone = dto.Phone,
                 RoleId = employerRole.Id,
                 EmailVerified = false,
@@ -173,7 +173,7 @@ public class AuthService : IAuthService
                 CompanyWebsite = dto.CompanyWebsite,
                 Industry = dto.Industry,
                 CompanySize = dto.CompanySize,
-                Headquarters = dto.HeadQuarters
+                Location = dto.Location
             };
 
             _context.Employers.Add(employer);
