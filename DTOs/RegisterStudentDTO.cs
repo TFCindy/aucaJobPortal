@@ -13,7 +13,8 @@ public class RegisterStudentDTO
     public string Program{get;set;}=string.Empty;
     public string? Faculty{get;set;}
     public string? Department{get;set;}
-    public string? Phone{get;set;}
+    [Required]
+    public string Phone{get;set;}=string.Empty;
     [Required, MinLength(8)]
     public string Password{get;set;}=string.Empty;
     public int? YearOfStudy{get;set;}
