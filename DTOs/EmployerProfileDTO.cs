@@ -23,6 +23,6 @@ public class UpdateEmployerProfileDTO
     public string? CompanyWebsite { get; set; }
     public string? Industry { get; set; }
     public string? CompanySize { get; set; }
-    public string? Headquarters { get; set; }
+    public string? Location { get; set; }
     public string? Phone { get; set; }
 }
