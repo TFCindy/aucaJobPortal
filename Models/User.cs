@@ -15,7 +15,7 @@ public class User
     [Column("full_name")]
     public string FullName{get;set;}=string.Empty;
     [Column("phone")]
-    public string? Phone{get;set;}
+    public string Phone{get;set;}=string.Empty;
     [Column("is_active")]
     public bool IsActive{get;set;}=true;
     [Column("created_at")]
