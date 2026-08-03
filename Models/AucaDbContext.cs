@@ -21,6 +21,8 @@ public class AucaDbContext : DbContext
     public DbSet<Job> Jobs { get; set; } = null!;
     public DbSet<AuditLog> AUditLogs { get; set; } = null!;
     public DbSet<Application> Applications { get; set; } = null!;
+    public DbSet<JobType> JobTypes {get;set;} = null!;
+    public DbSet<JobJobType> JobJobTypes {get;set;} = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -146,7 +148,28 @@ public class AucaDbContext : DbContext
       modelBuilder.Entity<Permission>()
       .HasIndex(p=>p.Name)
       .IsUnique();
+     
+     modelBuilder.Entity<JobType>()
+     .HasIndex(jt => jt.Name)
+     .IsUnique();
 
+     modelBuilder.Entity<JobJobType>()
+     .HasKey(jjt=>new {jjt.JobId, jjt.JobTypeId});
+
+     modelBuilder.Entity<JobJobType>()
+    .HasOne(jjt => jjt.Job)
+    .WithMany(j => j.JobJobTypes)
+    .HasForeignKey(jjt => jjt.JobId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+    modelBuilder.Entity<JobJobType>()
+    .HasOne(jjt => jjt.JobType)
+    .WithMany(jt => jt.JobJobTypes)
+    .HasForeignKey(jjt => jjt.JobTypeId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+
+    
 
 
 

@@ -18,11 +18,7 @@ public class Job
     public string? Responsibilities{get;set;}
     [Column("location")]
     public string? Location{get;set;}
-    [Column("job_type")]
-    public string? JobType{get;set;}
    
-    [Column("experience_level")]
-    public string? ExperienceLevel{get;set;}
     [Column("deadline")]
     public DateTime? DeadlineDate{get;set;}
     [Column("status")]
@@ -46,5 +42,9 @@ public class Job
 
     public virtual ICollection<Application> Applications{get;set;}=[];
     public virtual ICollection<SavedJob> SavedJobs{get;set;}=[];
+    public virtual ICollection<JobJobType> JobJobTypes{get;set;}=[];
+    public List<string> JobTypeNames => JobJobTypes?
+        .Select(jjt => jjt.JobType?.Name ?? string.Empty)
+        .ToList() ?? new List<string>();
 
 }

@@ -19,7 +19,7 @@ public class Employer
     public string Industry{get;set;}=string.Empty;
     [Column("company_size")]
     public string? CompanySize{get;set;}
-    [Column("headquarters")]
+    [Column("location")]
     public string Location{get;set;}=string.Empty;
     [Column("company_logo")]
     public string? CompanyLogo{get;set;}
