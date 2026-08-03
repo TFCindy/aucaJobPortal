@@ -113,7 +113,7 @@ public class ProfileService : IProfileService
             CompanyWebsite = employer.CompanyWebsite,
             Industry = employer.Industry,
             CompanySize = employer.CompanySize,
-            Headquarters = employer.Headquarters,
+            Location = employer.Location,
             CompanyLogo = employer.CompanyLogo,
             Verified = employer.Verified,
             EmailNotificationsEnabled = employer.EmailNotificationsEnabled,
@@ -149,8 +149,8 @@ public class ProfileService : IProfileService
         if (!string.IsNullOrEmpty(dto.CompanySize))
             employer.CompanySize = dto.CompanySize;
         
-        if (!string.IsNullOrEmpty(dto.Headquarters))
-            employer.Headquarters = dto.Headquarters;
+        if (!string.IsNullOrEmpty(dto.Location))
+            employer.Location = dto.Location;
 
         // Update User fields
         if (!string.IsNullOrEmpty(dto.Phone))
