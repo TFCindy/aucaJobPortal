@@ -9,7 +9,7 @@ public class EmployerProfileDTO
     public string? CompanyWebsite { get; set; }
     public string? Industry { get; set; }
     public string? CompanySize { get; set; }
-    public string? Headquarters { get; set; }
+    public string? Location { get; set; }
     public string? CompanyLogo { get; set; }
     public bool Verified { get; set; }
     public bool EmailNotificationsEnabled { get; set; }
