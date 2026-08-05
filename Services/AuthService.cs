@@ -98,7 +98,6 @@ public class AuthService : IAuthService
             await _context.SaveChangesAsync();
 
             await transaction.CommitAsync();
-
             // 7. Send verification email (after commit, so we don't email
             //    someone whose registration ultimately failed)
             await _emailService.SendVerificationEmailAsync(user.Email, user.FullName, verificationToken);
@@ -128,6 +127,14 @@ public class AuthService : IAuthService
             return new AuthResponseDTO { Success = false, Message = "Email already registered" };
         }
 
+        var existingCompany = await _context.Employers
+            .FirstOrDefaultAsync(e => e.CompanyName.ToLower() == dto.CompanyName.ToLower());
+
+        if (existingCompany != null)
+        {
+            return new AuthResponseDTO { Success = false, Message = "A company with this name is already registered" };
+        }
+        
         // 2. Hash password
         var hashedPassword = _passwordHasher.HashPassword(dto.Password);
 
@@ -173,7 +180,8 @@ public class AuthService : IAuthService
                 CompanyWebsite = dto.CompanyWebsite,
                 Industry = dto.Industry,
                 CompanySize = dto.CompanySize,
-                Location = dto.Location
+                Location = dto.Location,
+                Tin=dto.Tin
             };
 
             _context.Employers.Add(employer);
@@ -199,36 +207,38 @@ public class AuthService : IAuthService
 
     // ─── VERIFY EMAIL ───
     public async Task<AuthResponseDTO> VerifyEmailAsync(string token)
+{
+    var user = await _context.Users
+        .Include(u => u.Role)
+        .FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
+
+    if (user == null)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
-
-        if (user == null)
-        {
-            return new AuthResponseDTO { Success = false, Message = "Invalid verification link" };
-        }
-
-        if (user.EmailVerified)
-        {
-            return new AuthResponseDTO { Success = true, Message = "Email already verified" };
-        }
-
-        if (user.EmailVerificationExpires < DateTime.UtcNow)
-        {
-            return new AuthResponseDTO { Success = false, Message = "Verification link has expired. Please request a new one." };
-        }
-
-        user.EmailVerified = true;
-        user.EmailVerificationToken = null;
-        user.EmailVerificationExpires = null;
-        user.UpdatedAt = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
-
-        await _emailService.SendWelcomeEmailAsync(user.Email, user.FullName);
-
-        return new AuthResponseDTO { Success = true, Message = "Email verified successfully! You can now log in." };
+        return new AuthResponseDTO { Success = false, Message = "Invalid verification link" };
     }
+
+    if (user.EmailVerified)
+    {
+        return new AuthResponseDTO { Success = true, Message = "Email already verified" };
+    }
+
+    if (user.EmailVerificationExpires < DateTime.UtcNow)
+    {
+        return new AuthResponseDTO { Success = false, Message = "Verification link has expired. Please request a new one." };
+    }
+
+    user.EmailVerified = true;
+    user.EmailVerificationToken = null;
+    user.EmailVerificationExpires = null;
+    user.UpdatedAt = DateTime.UtcNow;
+
+    await _context.SaveChangesAsync();
+
+    var userType = user.Role?.Name ?? "student";
+    await _emailService.SendWelcomeEmailAsync(user.Email, user.FullName, userType);
+
+    return new AuthResponseDTO { Success = true, Message = "Email verified successfully! You can now log in." };
+}
 
     // ─── LOGIN ───
     public async Task<AuthResponseDTO> LoginAsync(LoginRequestDTO dto)
