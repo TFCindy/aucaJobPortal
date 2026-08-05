@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AucaJobPortalDotNet.Models;
-[Table("appliactions")]
+[Table("applications")]
 public class Application
 {
     [Column("id")]

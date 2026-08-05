@@ -31,7 +31,8 @@ public class Employer
     public string? VerificationDocumentPath{get;set;}
     [Column("email_notifications_enabled")]
     public bool EmailNotificationsEnabled{get;set;}=true;
-
+    [Column("tin")]
+    public string Tin{get;set;}=string.Empty;
     public virtual User User{get;set;}=null!;
     public virtual ICollection<Job> Jobs{get;set;}=[];
 
