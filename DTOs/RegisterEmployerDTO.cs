@@ -20,5 +20,8 @@ public class RegisterEmployerDTO
     public string? CompanySize{get;set;}
     [Required]
     public string Location{get;set;}=string.Empty;
+    [Required]
+    [RegularExpression(@"^\d{9}$", ErrorMessage = "TIN must be exactly 9 digits (numbers only)")]
+    public string Tin{get;set;}=string.Empty;
 
 }

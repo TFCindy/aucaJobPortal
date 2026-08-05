@@ -1,0 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace AucaJobPortalDotNet.DTOs;
+
+public class CreateApplicationDTO
+{
+    [Required]
+    public int JobId { get; set; }
+    public string? CoverLetter { get; set; }
+    public string? ProfessionalExperience { get; set; }
+    public string? Skills { get; set; }
+    public string? EducationLevel { get; set; }
+    public string? EducationDescription { get; set; }
+}
