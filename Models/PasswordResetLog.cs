@@ -9,7 +9,7 @@ public class PasswordResetLog
     [Column("user_id")]
     public int? UserId{get;set;}
     [Column("email")]
-    public string Email{get;private set;}=string.Empty;
+    public string Email{get;set;}=string.Empty;
     [Column("reset_requested_at")]
     public DateTime ResetRequestedAt{get;private set;}=DateTime.UtcNow;
     
