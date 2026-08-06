@@ -291,4 +291,105 @@ public class AuthService : IAuthService
             }
         };
     }
+
+    //password reset
+    public async Task<PasswordResponseDTO> ForgotPasswordAsync (ForgotPasswordDTO dto)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == dto.Email.ToLower());
+        
+        var genericResponse = new PasswordResponseDTO
+        {
+            Success = true,
+            Message = "If that email is registered, a password reset link has been sent."
+        };
+
+        if (user == null)
+        {
+            return genericResponse;
+        }
+        
+        var resetToken = Guid.NewGuid().ToString("N");
+        var resetExpires = DateTime.UtcNow.AddHours(1);
+
+        user.PasswordResetToken = resetToken;
+        user.PasswordResetExpires = resetExpires;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        var resetLog = new PasswordResetLog
+        {
+            UserId = user.Id,
+            Email=user.Email
+        };
+
+        _context.PasswordResetLogs.Add(resetLog);
+        await _context.SaveChangesAsync();
+
+        await _emailService.SendPasswordResetEmailAsync(user.Email, user.FullName, resetToken);
+
+        return genericResponse;
+    }
+
+    //reset password
+    public async Task<PasswordResponseDTO> ResetPasswordAsync(ResetPasswordDTO dto)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.PasswordResetToken == dto.Token);
+        
+        if (user == null)
+        {
+            return new PasswordResponseDTO
+            {
+                Success=false,
+                Message="Invalid or expired reset link"
+            };
+        }
+
+        if(user.PasswordResetExpires < DateTime.UtcNow)
+        {
+            return new PasswordResponseDTO {Success=false,Message="This reset link has expired.Pleaser request a new one."};
+        }
+
+        user.PasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
+        user.PasswordResetToken = null;
+        user.PasswordResetExpires= null;
+        user.UpdatedAt=DateTime.UtcNow;
+
+        var resetLog = await _context.PasswordResetLogs
+            .Where(l => l.UserId == user.Id && l.ResetCompletedAt == null)
+            .OrderByDescending(l => l.ResetRequestedAt)
+            .FirstOrDefaultAsync();
+
+        if (resetLog != null)
+        {
+            resetLog.ResetCompletedAt = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new PasswordResponseDTO { Success = true, Message = "Password reset successfully. You can now log in with your new password." };
+    }
+
+    // ─── CHANGE PASSWORD (logged-in user) ───
+    public async Task<PasswordResponseDTO> ChangePasswordAsync(int userId, ChangePasswordDTO dto)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return new PasswordResponseDTO { Success = false, Message = "User not found" };
+        }
+
+        if (!_passwordHasher.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
+        {
+            return new PasswordResponseDTO { Success = false, Message = "Current password is incorrect" };
+        }
+
+        user.PasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return new PasswordResponseDTO { Success = true, Message = "Password changed successfully" };
+    }
 }
