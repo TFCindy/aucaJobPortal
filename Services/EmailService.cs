@@ -10,11 +10,14 @@ public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<EmailService> _logger;
+    private readonly AucaDbContext _context;
 
-    public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
+    public EmailService(IConfiguration configuration, ILogger<EmailService> logger, AucaDbContext context)
     {
         _configuration = configuration;
         _logger = logger;
+        _context = context;
+        
     }
 
     // ─── EXISTING METHOD: SendVerificationEmailAsync (UNCHANGED) ───
@@ -32,7 +35,7 @@ public class EmailService : IEmailService
             <p>If you didn't register, please ignore this email.</p>
         ";
 
-        return await SendEmailAsync(email, subject, body);
+        return await SendEmailAsync(email, subject, body );
     }
 
     // ─── EXISTING METHOD: SendPasswordResetEmailAsync (UNCHANGED) ───
@@ -242,8 +245,25 @@ public class EmailService : IEmailService
 
 
     // ─── PRIVATE: SendEmailAsync (UNCHANGED) ───
-    private async Task<bool> SendEmailAsync(string toEmail, string subject, string body)
+    public async Task<bool> SendEmailAsync(string toEmail, string subject, string body, string emailType = "General", int? userId = null)
 {
+    // 1. CREATE LOG
+    var emailLog = new EmailLog
+    {
+        RecipientEmail = toEmail,
+        EmailType = emailType,
+        Subject = subject,
+        Status = "Pending",
+        SentAt = DateTime.UtcNow,
+        UserId = userId
+    };
+
+    // 2.SAVE LOG IMMEDIATELY (BEFORE sending email)
+    _context.EmailLogs.Add(emailLog);
+    await _context.SaveChangesAsync();
+    
+    _logger.LogInformation($"Log created with status 'Pending' for: {toEmail}");
+
     try
     {
         var emailSettings = _configuration.GetSection("EmailSettings");
@@ -256,6 +276,11 @@ public class EmailService : IEmailService
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             _logger.LogWarning("Email credentials not configured. Skipping email send.");
+            
+            emailLog.Status = "Failed";
+            emailLog.ErrorMessage = "Email credentials not configured";
+            await _context.SaveChangesAsync();
+            
             return false;
         }
 
@@ -276,11 +301,24 @@ public class EmailService : IEmailService
         await client.DisconnectAsync(true);
 
         _logger.LogInformation($"Email sent successfully to: {toEmail}");
+
+        // 4. UPDATE LOG ON SUCCESS
+        emailLog.Status = "Sent";
+        await _context.SaveChangesAsync();
+        
+        _logger.LogInformation($"Log updated to 'Sent' for: {toEmail}");
+        
         return true;
     }
     catch (Exception ex)
     {
-        _logger.LogError(ex, $"Email sending failed for: {toEmail}");
+        _logger.LogError(ex, $"Email failed for: {toEmail}");
+        emailLog.Status = "Failed";
+        emailLog.ErrorMessage = ex.Message;
+        await _context.SaveChangesAsync();
+        
+        _logger.LogInformation($"Log updated to 'Failed' for: {toEmail}");
+        
         return false;
     }
 }
