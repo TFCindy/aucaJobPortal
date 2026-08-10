@@ -9,13 +9,11 @@ namespace AucaJobPortalDotNet.Services;
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
-    private readonly ILogger<EmailService> _logger;
     private readonly AucaDbContext _context;
 
-    public EmailService(IConfiguration configuration, ILogger<EmailService> logger, AucaDbContext context)
+    public EmailService(IConfiguration configuration, AucaDbContext context)
     {
         _configuration = configuration;
-        _logger = logger;
         _context = context;
         
     }
@@ -232,12 +230,10 @@ public class EmailService : IEmailService
                 await SendEmailAsync(employerUser.Email, employerSubject, employerBody);
             }
 
-            _logger.LogInformation($"Application notifications sent for Application ID: {application.Id}");
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failed to send application notifications for Application ID: {application.Id}");
             return false;
         }
     }
@@ -261,8 +257,6 @@ public class EmailService : IEmailService
     // 2.SAVE LOG IMMEDIATELY (BEFORE sending email)
     _context.EmailLogs.Add(emailLog);
     await _context.SaveChangesAsync();
-    
-    _logger.LogInformation($"Log created with status 'Pending' for: {toEmail}");
 
     try
     {
@@ -275,8 +269,6 @@ public class EmailService : IEmailService
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            _logger.LogWarning("Email credentials not configured. Skipping email send.");
-            
             emailLog.Status = "Failed";
             emailLog.ErrorMessage = "Email credentials not configured";
             await _context.SaveChangesAsync();
@@ -300,24 +292,17 @@ public class EmailService : IEmailService
         await client.SendAsync(message);
         await client.DisconnectAsync(true);
 
-        _logger.LogInformation($"Email sent successfully to: {toEmail}");
-
         // 4. UPDATE LOG ON SUCCESS
         emailLog.Status = "Sent";
         await _context.SaveChangesAsync();
-        
-        _logger.LogInformation($"Log updated to 'Sent' for: {toEmail}");
         
         return true;
     }
     catch (Exception ex)
     {
-        _logger.LogError(ex, $"Email failed for: {toEmail}");
         emailLog.Status = "Failed";
         emailLog.ErrorMessage = ex.Message;
         await _context.SaveChangesAsync();
-        
-        _logger.LogInformation($"Log updated to 'Failed' for: {toEmail}");
         
         return false;
     }
