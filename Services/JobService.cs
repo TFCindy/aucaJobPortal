@@ -8,10 +8,12 @@ namespace AucaJobPortalDotNet.Services;
 public class JobService : IJobService
 {
     private readonly AucaDbContext _context;
+    private readonly INotificationService _notificationService;
 
-    public JobService(AucaDbContext context)
+    public JobService(AucaDbContext context, INotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     private IQueryable<Job> JobsWithIncludes()
@@ -203,8 +205,13 @@ public class JobService : IJobService
     }
 
     public async Task<JobResponseDTO> ApproveJobAsync(int jobId, int approvedByUserId)
+{
+    using var transaction = await _context.Database.BeginTransactionAsync();
+    try
     {
-        var job = await _context.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
+        var job = await _context.Jobs
+            .Include(j => j.Employer)
+            .FirstOrDefaultAsync(j => j.Id == jobId);
 
         if (job == null)
         {
@@ -217,12 +224,34 @@ public class JobService : IJobService
         job.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        await _notificationService.CreateNotificationAsync(
+            userId: job.Employer.UserId,
+            title: "Job Approved",
+            message: $"Your job posting \"{job.Title}\" has been approved and is now live.",
+            type: "job_approved",
+            entityType: "job",
+            entityId: job.Id
+        );
+
+        await transaction.CommitAsync();
         return await GetJobByIdAsync(job.Id);
     }
-
-    public async Task<JobResponseDTO> RejectJobAsync(int jobId, int rejectedByUserId)
+    catch
     {
-        var job = await _context.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
+        await transaction.RollbackAsync();
+        throw;
+    }
+}
+
+public async Task<JobResponseDTO> RejectJobAsync(int jobId, int rejectedByUserId)
+{
+    using var transaction = await _context.Database.BeginTransactionAsync();
+    try
+    {
+        var job = await _context.Jobs
+            .Include(j => j.Employer)
+            .FirstOrDefaultAsync(j => j.Id == jobId);
 
         if (job == null)
         {
@@ -235,8 +264,25 @@ public class JobService : IJobService
         job.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        await _notificationService.CreateNotificationAsync(
+            userId: job.Employer.UserId,
+            title: "Job Rejected",
+            message: $"Your job posting \"{job.Title}\" was not approved.",
+            type: "job_rejected",
+            entityType: "job",
+            entityId: job.Id
+        );
+
+        await transaction.CommitAsync();
         return await GetJobByIdAsync(job.Id);
     }
+    catch
+    {
+        await transaction.RollbackAsync();
+        throw;
+    }
+}
 
     public async Task<List<JobResponseDTO>> GetJobsByEmployerAsync(int employerId)
     {

@@ -62,34 +62,45 @@ public class ApplicationService : IApplicationService
         throw new Exception("You have already applied to this job");
     }
 
-    var application = new Application
+    using var transaction = await _context.Database.BeginTransactionAsync();
+    try
     {
-        JobId = dto.JobId,
-        StudentId = student.Id,
-        CoverLetter = dto.CoverLetter,
-        Status = "pending",
-        UpdatedAt = DateTime.UtcNow,
-        ProfessionalExperience = dto.ProfessionalExperience,
-        Skills = dto.Skills,
-        EducationLevel = dto.EducationLevel,
-        EducationDescription = dto.EducationDescription
-    };
+        var application = new Application
+        {
+            JobId = dto.JobId,
+            StudentId = student.Id,
+            CoverLetter = dto.CoverLetter,
+            Status = "pending",
+            UpdatedAt = DateTime.UtcNow,
+            ProfessionalExperience = dto.ProfessionalExperience,
+            Skills = dto.Skills,
+            EducationLevel = dto.EducationLevel,
+            EducationDescription = dto.EducationDescription
+        };
 
-    _context.Applications.Add(application);
-    await _context.SaveChangesAsync();
+        _context.Applications.Add(application);
+        await _context.SaveChangesAsync();
 
-    await _emailService.SendApplicationNotificationsAsync(application, job, student, job.Employer);
+        await _notificationService.CreateNotificationAsync(
+            userId: job.Employer.UserId,
+            title: "New Application Received",
+            message: $"A new application was submitted for {job.Title}",
+            type: "new_application",
+            entityType: "application",
+            entityId: application.Id
+        );
 
-    await _notificationService.CreateNotificationAsync(
-        userId: job.Employer.UserId,
-        title: "New Application Received",
-        message: $"A new application was submitted for {job.Title}",
-        type: "new_application",
-        entityType: "application",
-        entityId: application.Id
-    );
+        await transaction.CommitAsync();
 
-    return await GetApplicationByIdAsync(application.Id);
+        await _emailService.SendApplicationNotificationsAsync(application, job, student, job.Employer);
+
+        return await GetApplicationByIdAsync(application.Id);
+    }
+    catch
+    {
+        await transaction.RollbackAsync();
+        throw;
+    }
 }
 
     // ─── GET MY APPLICATIONS ───
@@ -177,34 +188,37 @@ public class ApplicationService : IApplicationService
 
     // ─── UPDATE APPLICATION STATUS (Employer) ───
     public async Task<ApplicationResponseDTO> UpdateApplicationStatusAsync(
-        int applicationId,
-        int employerId,
-        UpdateApplicationStatusDTO dto)
+    int applicationId,
+    int employerId,
+    UpdateApplicationStatusDTO dto)
+{
+    var application = await ApplicationsWithIncludes()
+        .FirstOrDefaultAsync(a => a.Id == applicationId);
+
+    if (application == null)
     {
-        var application = await ApplicationsWithIncludes()
-            .FirstOrDefaultAsync(a => a.Id == applicationId);
+        throw new Exception("Application not found");
+    }
 
-        if (application == null)
-        {
-            throw new Exception("Application not found");
-        }
+    if (application.Job.EmployerId != employerId)
+    {
+        throw new Exception("You don't have permission to update this application");
+    }
 
-        if (application.Job.EmployerId != employerId)
-        {
-            throw new Exception("You don't have permission to update this application");
-        }
+    var validStatuses = new[] { "pending", "reviewed", "shortlisted", "rejected", "hired", "withdrawn" };
+    if (!validStatuses.Contains(dto.Status))
+    {
+        throw new Exception($"Invalid status. Valid statuses: {string.Join(", ", validStatuses)}");
+    }
 
-        var validStatuses = new[] { "pending", "reviewed", "shortlisted", "rejected", "hired", "withdrawn" };
-        if (!validStatuses.Contains(dto.Status))
-        {
-            throw new Exception($"Invalid status. Valid statuses: {string.Join(", ", validStatuses)}");
-        }
+    if (application.Status == "hired" || application.Status == "rejected" || application.Status == "withdrawn")
+    {
+        throw new Exception("Cannot change status of a finalised application");
+    }
 
-        if (application.Status == "hired" || application.Status == "rejected" || application.Status == "withdrawn")
-        {
-            throw new Exception("Cannot change status of a finalised application");
-        }
-
+    using var transaction = await _context.Database.BeginTransactionAsync();
+    try
+    {
         application.Status = dto.Status;
         application.EmployerFeedback = dto.EmployerFeedback;
         application.InterviewDate = dto.InterviewDate;
@@ -212,16 +226,18 @@ public class ApplicationService : IApplicationService
 
         await _context.SaveChangesAsync();
 
-        // Notify the student in-app, for every status change
         await _notificationService.CreateNotificationAsync(
             userId: application.Student.UserId,
             title: "Application Status Updated",
             message: $"Your application for {application.Job.Title} is now: {dto.Status}",
             type: "application_status_update",
+            entityType: "application",
             entityId: application.Id
         );
 
-        // Email only for the major, decision-level transitions
+        await transaction.CommitAsync();
+
+        // Email sent after commit, same reasoning as above
         if (dto.Status is "shortlisted" or "rejected" or "hired")
         {
             await _emailService.SendApplicationStatusEmailAsync(
@@ -234,7 +250,12 @@ public class ApplicationService : IApplicationService
 
         return await GetApplicationByIdAsync(applicationId);
     }
-
+    catch
+    {
+        await transaction.RollbackAsync();
+        throw;
+    }
+}
     // MAP TO RESPONSE 
     private ApplicationResponseDTO MapToResponse(Application application)
     {
