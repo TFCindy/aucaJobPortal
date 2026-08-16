@@ -87,11 +87,8 @@ public class AuthService : IAuthService
             {
                 UserId = user.Id,
                 StudentId = dto.StudentId,
+                IsAlumni=dto.IsAlumni,
                 Program = dto.Program,
-                Faculty = dto.Faculty,
-                Department = dto.Department,
-                YearOfStudy = dto.YearOfStudy,
-                GraduationYear = dto.GraduationYear
             };
 
             _context.Students.Add(student);

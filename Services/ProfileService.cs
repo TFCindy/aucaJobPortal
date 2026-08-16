@@ -162,4 +162,138 @@ public class ProfileService : IProfileService
 
         return await GetEmployerProfileAsync(userId);
     }
+
+   public async Task<AlumniProfileDTO> GetAlumniProfileAsync(int userId)
+    {
+        var student = await _context.Students
+            .Include(s => s.User)
+            .FirstOrDefaultAsync(s => s.UserId == userId);
+
+        if (student == null)
+        {
+            throw new Exception("Student profile not found");
+        }
+
+        // Check if student is actually alumni
+        if (!student.IsAlumni)
+        {
+            throw new Exception("Student is not an alumni. Please use GetStudentProfileAsync.");
+        }
+
+        return new AlumniProfileDTO
+        {
+            // Basic Info
+            Id = student.Id,
+            UserId = student.UserId,
+            StudentId = student.StudentId,
+            FullName = student.User?.FullName ?? string.Empty,
+            Email = student.User?.Email ?? string.Empty,
+            Phone = student.User?.Phone,
+            ProfilePicture = student.ProfilePicture,
+            Bio = student.Bio,
+            Skills = student.Skills,
+            CvFilePath = student.CvFilePath,
+            EmailNotificationsEnabled = student.EmailNotificationsEnabled,
+
+            // Academic Info
+            Program = student.Program,
+            Faculty = student.Faculty,
+            Department = student.Department,
+            GraduationYear = student.GraduationYear ?? DateTime.UtcNow.Year,
+            DegreeClassification = student.DegreeClassification ?? string.Empty,
+
+            // Employment Info
+            CurrentEmploymentStatus = student.CurrentEmploymentStatus,
+            CurrentEmployer = student.CurrentEmployer,
+            CurrentJobTitle = student.CurrentJobTitle,
+            Industry = student.Industry,
+            EmploymentStartDate = student.EmploymentStartDate,
+
+            // Document Verification Status
+            TranscriptVerified = student.TranscriptVerified,
+            DiplomaVerified = student.DiplomaVerified,
+            DocumentVerificationStatus = student.DocumentVerificationStatus,
+
+            // Timestamps
+            CreatedAt = student.CreatedAt,
+            AlumniSince = student.AlumniSince
+        };
+    }
+
+    // ─── UPDATE ALUMNI PROFILE ───
+    public async Task<AlumniProfileDTO> UpdateAlumniProfileAsync(int userId, UpdateAlumniProfileDTO dto)
+    {
+        var student = await _context.Students
+            .Include(s => s.User)
+            .FirstOrDefaultAsync(s => s.UserId == userId);
+
+        if (student == null)
+        {
+            throw new Exception("Student profile not found");
+        }
+
+        // Check if student is actually alumni
+        if (!student.IsAlumni)
+        {
+            throw new Exception("Student is not an alumni. Please use UpdateStudentProfileAsync.");
+        }
+
+        // ─── UPDATE ACADEMIC INFO ───
+        if (!string.IsNullOrEmpty(dto.Program))
+            student.Program = dto.Program;
+
+        if (!string.IsNullOrEmpty(dto.Faculty))
+            student.Faculty = dto.Faculty;
+
+        if (!string.IsNullOrEmpty(dto.Department))
+            student.Department = dto.Department;
+
+        if (dto.GraduationYear.HasValue)
+            student.GraduationYear = dto.GraduationYear;
+
+        if (!string.IsNullOrEmpty(dto.DegreeClassification))
+            student.DegreeClassification = dto.DegreeClassification;
+
+        // ─── UPDATE EMPLOYMENT INFO ───
+        if (!string.IsNullOrEmpty(dto.CurrentEmploymentStatus))
+            student.CurrentEmploymentStatus = dto.CurrentEmploymentStatus;
+
+        if (!string.IsNullOrEmpty(dto.CurrentEmployer))
+            student.CurrentEmployer = dto.CurrentEmployer;
+
+        if (!string.IsNullOrEmpty(dto.CurrentJobTitle))
+            student.CurrentJobTitle = dto.CurrentJobTitle;
+
+        if (!string.IsNullOrEmpty(dto.Industry))
+            student.Industry = dto.Industry;
+
+        if (dto.EmploymentStartDate.HasValue)
+            student.EmploymentStartDate = dto.EmploymentStartDate;
+
+        // ─── UPDATE PERSONAL INFO ───
+        if (!string.IsNullOrEmpty(dto.Bio))
+            student.Bio = dto.Bio;
+
+        if (!string.IsNullOrEmpty(dto.Skills))
+            student.Skills = dto.Skills;
+
+        if (!string.IsNullOrEmpty(dto.ProfilePicture))
+            student.ProfilePicture = dto.ProfilePicture;
+
+        if (!string.IsNullOrEmpty(dto.CvFilePath))
+            student.CvFilePath = dto.CvFilePath;
+
+        if (dto.EmailNotificationsEnabled.HasValue)
+            student.EmailNotificationsEnabled = dto.EmailNotificationsEnabled.Value;
+
+        // ─── UPDATE USER FIELDS ───
+        if (!string.IsNullOrEmpty(dto.Phone))
+            student.User!.Phone = dto.Phone;
+
+        student.User!.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return await GetAlumniProfileAsync(userId);
+    }
 }

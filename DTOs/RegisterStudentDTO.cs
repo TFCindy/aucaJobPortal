@@ -10,13 +10,15 @@ public class RegisterStudentDTO
     [Required]
     public string FullName{get;set;}=string.Empty;
     [Required]
-    public string Program{get;set;}=string.Empty;
-    public string? Faculty{get;set;}
-    public string? Department{get;set;}
-    [Required]
     public string Phone{get;set;}=string.Empty;
     [Required, MinLength(8)]
     public string Password{get;set;}=string.Empty;
+    [Required]
+    public bool IsAlumni { get; set; } = false;
+    public string? Program{get;set;}
+    public string? Faculty{get;set;}
+    public string? Department{get;set;}
     public int? YearOfStudy{get;set;}
     public int? GraduationYear{get;set;}
+    
 }

@@ -91,4 +91,36 @@ public class ProfileController : ControllerBase
             return NotFound(new { success = false, message = ex.Message });
         }
     }
+
+    // ─── GET ALUMNI PROFILE ───
+[HttpGet("alumni")]
+public async Task<IActionResult> GetAlumniProfile()
+{
+    try
+    {
+        var userId = GetUserId();
+        var profile = await _profileService.GetAlumniProfileAsync(userId);
+        return Ok(new { success = true, data = profile });
+    }
+    catch (Exception ex)
+    {
+        return NotFound(new { success = false, message = ex.Message });
+    }
+}
+
+// ─── UPDATE ALUMNI PROFILE ───
+[HttpPatch("alumni")]
+public async Task<IActionResult> UpdateAlumniProfile([FromBody] UpdateAlumniProfileDTO dto)
+{
+    try
+    {
+        var userId = GetUserId();
+        var profile = await _profileService.UpdateAlumniProfileAsync(userId, dto);
+        return Ok(new { success = true, message = "Alumni profile updated successfully", data = profile });
+    }
+    catch (Exception ex)
+    {
+        return NotFound(new { success = false, message = ex.Message });
+    }
+}
 }

@@ -23,7 +23,9 @@ public class AucaDbContext : DbContext
     public DbSet<Application> Applications { get; set; } = null!;
     public DbSet<JobType> JobTypes {get;set;} = null!;
     public DbSet<JobJobType> JobJobTypes {get;set;} = null!;
-
+    public DbSet<CareerCounselor> CareerCounselors { get; set; }
+    public DbSet<Program> Programs { get; set; }
+    public DbSet<ProgramApplication> ProgramApplications { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
        modelBuilder.Entity<RolePermission>()
