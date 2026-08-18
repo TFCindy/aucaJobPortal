@@ -1,0 +1,145 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-40 to-blue-200 flex items-center justify-center p-4">
+  <div class="max-w-md w-full bg-white rounded-xl shadow-2xl p-5">
+
+    <div class="flex justify-center mb-6">
+      <img src="/logo.png" alt="Auca LOGO" class="h-16" style="max-width: 200px;">
+    </div>
+
+    <h1 class="text-2xl font-bold text-center text-gray-800">Employer Registration</h1>
+    <p class="text-gray-500 text-center text-sm mt-1">Register your company to start hiring</p>
+
+    @if (successMessage) {
+      <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mt-4">{{ successMessage }}</div>
+    }
+    @if (errorMessage) {
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4">{{ errorMessage }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-4">
+
+    
+
+      <div class="mb-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input type="text" formControlName="email"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <div class="text-red-500 text-sm mt-1">
+            @if (form.get('email')?.errors?.['required']) { <span>Email is required</span> }
+            @if (form.get('email')?.errors?.['email']) { <span>Please enter a valid email</span> }
+          </div>
+        }
+      </div>
+
+      <div class="mb-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+        <input type="text" formControlName="phone"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+          @if (form.get('phone')?.invalid && form.get('phone')?.touched) {
+          <div class="text-red-500 text-sm mt-1">Telephone number is required</div>
+          }
+      </div>
+
+      <div class="mb-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+        <input type="text" formControlName="companyName"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+        @if (form.get('companyName')?.invalid && form.get('companyName')?.touched) {
+          <div class="text-red-500 text-sm mt-1">Company name is required</div>
+        }
+      </div>
+
+      <div class="mb-2">
+  <label class="block text-sm font-medium text-gray-700 mb-1">TIN (Tax Identification Number)</label>
+  <input type="text" formControlName="tin" maxlength="9"
+    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+    placeholder="9-digit TIN">
+  @if (form.get('tin')?.invalid && form.get('tin')?.touched) {
+    <div class="text-red-500 text-sm mt-1">
+      @if (form.get('tin')?.errors?.['required']) { <span>TIN is required</span> }
+      @if (form.get('tin')?.errors?.['pattern']) { <span>TIN must be exactly 9 digits</span> }
+    </div>
+  }
+</div>
+
+     <div class="mb-2">
+  <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+  <select formControlName="industry"
+    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+    <option value="">Select Industry</option>
+    <option value="Information Technology">Information Technology</option>
+    <option value="Banking & Financial Services">Banking & Financial Services</option>
+    <option value="Telecommunications">Telecommunications</option>
+    <option value="Agriculture & Agribusiness">Agriculture & Agribusiness</option>
+    <option value="Manufacturing">Manufacturing</option>
+    <option value="Construction & Real Estate">Construction & Real Estate</option>
+    <option value="Healthcare">Healthcare</option>
+    <option value="Education">Education</option>
+    <option value="Hospitality & Tourism">Hospitality & Tourism</option>
+    <option value="Retail & E-commerce">Retail & E-commerce</option>
+    <option value="Transportation & Logistics">Transportation & Logistics</option>
+    <option value="Energy & Utilities">Energy & Utilities</option>
+    <option value="Media & Communications">Media & Communications</option>
+    <option value="Legal Services">Legal Services</option>
+    <option value="Consulting">Consulting</option>
+    <option value="Non-Profit / NGO">Non-Profit / NGO</option>
+    <option value="Government / Public Sector">Government / Public Sector</option>
+    <option value="Mining">Mining</option>
+    <option value="Insurance">Insurance</option>
+    <option value="Other">Other</option>
+  </select>
+  @if (form.get('industry')?.invalid && form.get('industry')?.touched) {
+    <div class="text-red-500 text-sm mt-1">Please select an industry</div>
+  }
+</div>
+
+      <div class="mb-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company Description</label>
+        <textarea formControlName="companyDescription" rows="3"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"></textarea>
+          @if (form.get('companyDescription')?.invalid && form.get('companyDescription')?.touched) {
+          <div class="text-red-500 text-sm mt-1">Company description is required</div>
+        }
+      </div>
+
+      <div class="mb-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company Website</label>
+        <input type="text" formControlName="companyWebsite"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+      </div>
+
+     
+
+      <div class="mb-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+        <input type="text" formControlName="location"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+          @if (form.get('location')?.invalid && form.get('location')?.touched) {
+          <div class="text-red-500 text-sm mt-1">Location is required</div>
+        }
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <input type="password" formControlName="password"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+          placeholder="Min 8 characters">
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <div class="text-red-500 text-sm mt-1">Password must be at least 8 characters</div>
+        }
+      </div>
+
+      <button type="submit" [disabled]="isSubmitting"
+        class="w-full bg-blue-800 hover:bg-blue-900 disabled:bg-blue-300 text-white font-medium py-2 text-sm rounded-lg transition duration-200">
+        {{ isSubmitting ? 'Registering...' : 'Sign Up' }}
+      </button>
+
+    </form>
+
+    <p class="text-center text-sm text-gray-600 mt-3">
+      Already have an account?
+      <a routerLink="/login" class="text-blue-900 hover:underline font-medium">Login</a>
+    </p>
+
+  </div>
+</div>
