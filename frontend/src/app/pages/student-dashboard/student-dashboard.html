@@ -1,0 +1,19 @@
+<app-navbar></app-navbar>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <h1 class="text-2xl font-bold text-gray-800">Welcome back, {{ userFullName }}!</h1>
+
+  @if (profileCompletionPercent < 100) {
+    <div class="bg-white rounded-xl shadow p-5 mt-4">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-sm font-medium text-gray-700">Your profile is {{ profileCompletionPercent }}% complete</span>
+        <a routerLink="/student/profile" class="text-sm text-blue-800 hover:underline font-medium">Complete now →</a>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div class="bg-blue-800 h-2 rounded-full transition-all" [style.width.%]="profileCompletionPercent"></div>
+      </div>
+    </div>
+  }
+
+</div>
