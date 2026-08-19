@@ -5,6 +5,7 @@ import { Login } from './pages/login/login';
 import { VerifyEmail } from './pages/verify-email/verify-email';
 import { StudentDashboard } from './pages/student-dashboard/student-dashboard';
 import { authGuard } from './guards/auth-guard';
+import { EmployerDashboard } from './pages/employer-dashboard/employer-dashboard';
 
 
 export const routes: Routes = [
@@ -14,5 +15,6 @@ export const routes: Routes = [
   { path: 'verify-email', component: VerifyEmail },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'student/dashboard', component: StudentDashboard, canActivate: [authGuard] },
+  { path: 'employer/dashboard', component: EmployerDashboard, canActivate: [authGuard] }, 
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];

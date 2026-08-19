@@ -11,7 +11,25 @@ export class ApplicationService {
 
   constructor(private http: HttpClient) {}
 
+  //STUDENT
   getMyApplications(): Observable<any> {
     return this.http.get(`${this.apiUrl}/my-applications`);
+  }
+
+  applyToJob(jobId: number, payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/apply/${jobId}`, payload);
+  }
+
+  //EMPLOYER
+  getEmployerApplications(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/employer-applications`);
+  }
+
+  updateApplicationStatus(applicationId: number, status: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${applicationId}/status`, { status });
+  }
+
+  getApplicationById(applicationId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${applicationId}`);
   }
 }

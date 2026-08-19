@@ -11,7 +11,21 @@ export class ProfileService {
 
   constructor(private http: HttpClient) {}
 
+  // STUDENT 
   getStudentProfile(): Observable<any> {
     return this.http.get(`${this.apiUrl}/student`);
+  }
+
+  updateStudentProfile(payload: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/student`, payload);
+  }
+
+  // EMPLOYER
+  getEmployerProfile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/employer`);
+  }
+
+  updateEmployerProfile(payload: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/employer`, payload);
   }
 }

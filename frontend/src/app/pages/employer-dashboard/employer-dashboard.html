@@ -1,0 +1,129 @@
+<app-navbar></app-navbar>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+    
+    @if (isLoading) {
+        <div class="flex justify-center items-center h-64">
+            <div class="text-gray-500 text-sm">Loading dashboard...</div>
+        </div>
+    }
+    @else if (errorMessage) {
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4">
+            {{ errorMessage }}
+        </div>
+    }
+    @else {
+
+        <h1 class="text-2xl font-bold text-gray-800">Welcome back, {{ companyName || 'Employer' }}!</h1>
+
+        @if (profileCompletionPercent < 100) {
+            <div class="bg-white rounded-xl shadow p-5 mt-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700">
+                        Your profile is {{ profileCompletionPercent }}% complete
+                    </span>
+                    <a routerLink="/employer/profile" class="text-sm text-blue-800 hover:underline font-medium">
+                        Complete now →
+                    </a>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-800 h-2 rounded-full transition-all" 
+                         [style.width.%]="profileCompletionPercent">
+                    </div>
+                </div>
+            </div>
+        }
+
+       
+<!-- Stats Cards - Actionable Stats -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+    <div class="bg-white rounded-xl shadow p-4 text-center">
+        <p class="text-2xl font-bold text-blue-600">{{ activeJobsCount }}</p>
+        <p class="text-sm text-gray-500 mt-1">Live Jobs</p>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 text-center">
+        <p class="text-2xl font-bold text-green-600">{{ newApplications }}</p>
+        <p class="text-sm text-gray-500 mt-1">New This Week</p>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 text-center">
+        <p class="text-2xl font-bold text-yellow-600">{{ pendingCount }}</p>
+        <p class="text-sm text-gray-500 mt-1">To Review</p>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 text-center">
+        <p class="text-2xl font-bold text-purple-600">{{ hiredCount }}</p>
+        <p class="text-sm text-gray-500 mt-1">Hired</p>
+    </div>
+</div>
+
+        <div class="mt-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">Recent Applications</h2>
+                <a routerLink="/employer/applications" class="text-sm text-blue-800 hover:underline font-medium">
+                    View All Applications →
+                </a>
+            </div>
+
+            @if (recentApplications.length === 0) {
+                <p class="text-gray-500 text-sm">No applications received yet.</p>
+            }
+
+            <div class="space-y-3">
+                @for (app of recentApplications; track app.id) {
+                    <div class="bg-white rounded-xl shadow p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div>
+                            <p class="font-semibold text-gray-800">{{ app.candidateName || app.student?.user?.fullName }}</p>
+                            <p class="text-sm text-gray-500">{{ app.jobTitle || app.job?.title }}</p>
+                            <p class="text-xs text-gray-400 mt-1">Applied {{ app.appliedAt | date:'mediumDate' }}</p>
+                        </div>
+                        <div class="flex items-center gap-3 mt-2 md:mt-0">
+                            <span class="text-xs px-3 py-1 rounded-full {{ getStatusBadgeClass(app.status) }}">
+                                {{ app.status | titlecase }}
+                            </span>
+                            <a [routerLink]="['/employer/applications', app.id]" 
+                               class="text-sm text-blue-800 hover:underline font-medium">
+                                Review →
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">Your Recent Jobs</h2>
+                <a routerLink="/employer/jobs" class="text-sm text-blue-800 hover:underline font-medium">
+                    View All Jobs →
+                </a>
+            </div>
+
+            @if (recentJobs.length === 0) {
+                <p class="text-gray-500 text-sm">You haven't posted any jobs yet.</p>
+            }
+
+            <div class="grid md:grid-cols-3 gap-4">
+                @for (job of recentJobs; track job.id) {
+                    <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition">
+                        <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
+                        <p class="text-sm text-gray-500 mt-1">{{ job.location || 'Location not specified' }}</p>
+                        <p class="text-sm text-gray-500">Total Applications: {{ job.applicationCount || 0 }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Posted {{ job.createdAt | date:'mediumDate' }}</p>
+                        <div class="flex gap-2 mt-3">
+                            <a [routerLink]="['/employer/jobs', job.id]" 
+                               class="text-xs bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded transition">
+                                View
+                            </a>
+                            <a [routerLink]="['/employer/jobs', job.id, 'applications']" 
+                               class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded transition">
+                                Applications
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    }
+
+</div>
