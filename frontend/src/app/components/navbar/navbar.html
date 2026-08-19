@@ -1,55 +1,64 @@
-<nav class="bg-white shadow-sm sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="flex justify-between items-center h-16">
+<!-- Navbar -->
+<nav class="bg-white shadow-md px-4 py-3">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        
+        <!-- Logo / Brand -->
+        <div class="flex items-center gap-6">
+            <a routerLink="/" class="text-xl font-bold text-blue-800">AUCA Job Portal</a>
+        </div>
 
-      <div class="flex items-center gap-8">
-        <a routerLink="/student/dashboard" class="flex items-center">
-          <img src="/logo.png" alt="Auca Logo" class="h-10">
-        </a>
-
+        <!-- Navigation Links -->
         <div class="hidden md:flex items-center gap-6">
-          <a routerLink="/student/dashboard" routerLinkActive="text-blue-800 font-semibold" [routerLinkActiveOptions]="{exact: true}"
-             class="text-gray-600 hover:text-blue-800 transition">Home</a>
-          <a routerLink="/student/jobs" routerLinkActive="text-blue-800 font-semibold"
-             class="text-gray-600 hover:text-blue-800 transition">Browse Jobs</a>
-          <a routerLink="/student/applications" routerLinkActive="text-blue-800 font-semibold"
-             class="text-gray-600 hover:text-blue-800 transition">My Applications</a>
-          <a routerLink="/student/saved-jobs" routerLinkActive="text-blue-800 font-semibold"
-             class="text-gray-600 hover:text-blue-800 transition">Saved Jobs</a>
-          <a routerLink="/student/profile" routerLinkActive="text-blue-800 font-semibold"
-             class="text-gray-600 hover:text-blue-800 transition">My Profile</a>
+            @for (link of navLinks; track link.path) {
+                <a [routerLink]="link.path" 
+                   routerLinkActive="text-blue-800 font-semibold"
+                   class="text-gray-600 hover:text-blue-800 text-sm transition">
+                    {{ link.label }}
+                </a>
+            }
         </div>
-      </div>
 
-      <div class="flex items-center gap-4">
+        <!-- Right Side: Notifications + Profile -->
+        <div class="flex items-center gap-4">
+            <!-- Notifications -->
+            <button class="relative">
+                <svg class="w-6 h-6 text-gray-600 hover:text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                @if (unreadCount > 0) {
+                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {{ unreadCount }}
+                    </span>
+                }
+            </button>
 
-        <a routerLink="/student/notifications" class="relative text-gray-600 hover:text-blue-800 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
-          @if (unreadCount > 0) {
-            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-              {{ unreadCount }}
-            </span>
-          }
-        </a>
+            <!-- User Profile Dropdown -->
+            <div class="relative">
+                <button (click)="toggleDropdown()" 
+                        class="w-9 h-9 rounded-full bg-blue-800 text-white font-semibold flex items-center justify-center text-sm hover:bg-blue-900 transition">
+                    {{ userInitials }}
+                </button>
 
-        <div class="relative">
-          <button (click)="toggleDropdown()"
-            class="h-9 w-9 rounded-full bg-blue-800 text-white flex items-center justify-center font-medium text-sm hover:bg-blue-900 transition">
-            {{ userInitials }}
-          </button>
-
-          @if (isDropdownOpen) {
-            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1">
-              <div class="px-4 py-2 text-sm text-gray-500 border-b">{{ userFullName }}</div>
-              <a routerLink="/student/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Settings</a>
-              <button (click)="logout()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50">Logout</button>
+                <!-- Dropdown Menu -->
+                @if (isDropdownOpen) {
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-100">
+                        <div class="px-4 py-2 border-b border-gray-100">
+                            <p class="text-sm font-medium text-gray-800">{{ userFullName }}</p>
+                            <p class="text-xs text-gray-500">{{ userRole | titlecase }}</p>
+                        </div>
+                        <a routerLink="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                            Profile
+                        </a>
+                        <a routerLink="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                            Settings
+                        </a>
+                        <hr class="my-1 border-gray-100">
+                        <button (click)="logout()" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 transition">
+                            Logout
+                        </button>
+                    </div>
+                }
             </div>
-          }
         </div>
-
-      </div>
     </div>
-  </div>
 </nav>

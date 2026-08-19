@@ -12,8 +12,10 @@ import { NotificationService } from '../../services/notification';
 export class Navbar implements OnInit {
   userInitials = '';
   userFullName = '';
+  userRole: string | null = null;
   unreadCount = 0;
   isDropdownOpen = false;
+  navLinks: any[] = [];
 
   constructor(
     private router: Router,
@@ -25,19 +27,47 @@ export class Navbar implements OnInit {
     const userJson = localStorage.getItem('user');
     if (userJson) {
       const user = JSON.parse(userJson);
-      this.userFullName = user.fullName;
-      this.userInitials = this.getInitials(user.fullName);
+      this.userFullName = user.fullName || user.companyName || 'User';
+      if (user.role) {
+        this.userRole = user.role.toLowerCase(); 
+      } else if (user.userType) {
+        this.userRole = user.userType.toLowerCase();
+      } else {
+        this.userRole = 'student';  
+      }
+      
+      this.userInitials = this.getInitials(this.userFullName);
     }
+
+    this.setNavLinks();
 
     this.notificationService.getUnreadCount().subscribe({
       next: (response) => {
         this.unreadCount = response.data.unreadCount;
         this.cdr.detectChanges();
       },
-      error: () => {
-        // Silently fail — a notification count isn't critical enough to show an error for
-      }
+      error: () => {}
     });
+  }
+
+  setNavLinks() {
+    this.navLinks = [];
+
+    if (this.userRole === 'employer') {
+      this.navLinks = [
+        { label: 'Dashboard', path: '/employer/dashboard' },
+        { label: 'My Jobs', path: '/employer/jobs' },
+        { label: 'Applications', path: '/employer/applications' },
+        { label: 'Post a Job', path: '/employer/jobs/post' }
+      ];
+    } else {
+      this.navLinks = [
+        { label: 'Home', path: '/student/dashboard' },
+        { label: 'Browse Jobs', path: '/jobs' },
+        { label: 'My Applications', path: '/applications' },
+        { label: 'Saved Jobs', path: '/saved-jobs' }
+      ];
+    }
   }
 
   getInitials(fullName: string): string {
