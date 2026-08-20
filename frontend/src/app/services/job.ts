@@ -30,7 +30,7 @@ export class JobService {
   }
 
   updateJob(jobId: number, payload: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${jobId}`, payload);
+    return this.http.patch(`${this.apiUrl}/${jobId}`, payload);
   }
 
   deleteJob(jobId: number): Observable<any> {
