@@ -19,5 +19,6 @@ public class JobResponseDTO
     public int? ApprovedBy { get; set; }
     public DateTime? ApprovedAt { get; set; }
     public bool IsActive => Status == "active";
+    public int ApplicationCount { get; set; }
     public List<string> JobTypes { get; set; } = new();
 }

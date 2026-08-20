@@ -13,7 +13,6 @@ public interface IJobService
     Task<bool> WithdrawJobAsync(int jobId);
     Task<JobResponseDTO> ApproveJobAsync(int jobId, int approvedByUserId);
     Task<JobResponseDTO> RejectJobAsync(int jobId, int rejectedByUserId);
-    Task<List<JobResponseDTO>> GetJobsByEmployerAsync(int employerId);
     Task<List<JobResponseDTO>> GetJobsByEmployerUserIdAsync(int userId);
 
 }

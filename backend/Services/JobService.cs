@@ -22,7 +22,8 @@ public class JobService : IJobService
             .Include(j => j.Employer)
                 .ThenInclude(e => e.User)
             .Include(j => j.JobJobTypes)
-                .ThenInclude(jjt => jjt.JobType);
+                .ThenInclude(jjt => jjt.JobType)
+                .Include(j => j.Applications);
     }
 
     // ─── COMPLETE VALIDATION METHOD ───
@@ -284,27 +285,25 @@ public async Task<JobResponseDTO> RejectJobAsync(int jobId, int rejectedByUserId
     }
 }
 
-    public async Task<List<JobResponseDTO>> GetJobsByEmployerAsync(int employerId)
-    {
-        var jobs = await JobsWithIncludes()
-            .Where(j => j.EmployerId == employerId)
-            .OrderByDescending(j => j.PostedAt)
-            .ToListAsync();
-
-        return jobs.Select(MapToResponse).ToList();
-    }
+   
 
     public async Task<List<JobResponseDTO>> GetJobsByEmployerUserIdAsync(int userId)
+{
+    var employer = await _context.Employers
+        .FirstOrDefaultAsync(e => e.UserId == userId);
+
+    if (employer == null)
     {
-        var employer = await _context.Employers.FirstOrDefaultAsync(e => e.UserId == userId);
-
-        if (employer == null)
-        {
-            throw new Exception("Employer profile not found. Please complete your employer profile first.");
-        }
-
-        return await GetJobsByEmployerAsync(employer.Id);
+        throw new Exception("Employer profile not found");
     }
+
+    var jobs = await JobsWithIncludes()
+        .Where(j => j.EmployerId == employer.Id)
+        .OrderByDescending(j => j.PostedAt)
+        .ToListAsync();
+
+    return jobs.Select(MapToResponse).ToList();
+}
 
     private JobResponseDTO MapToResponse(Job job)
     {
@@ -318,15 +317,19 @@ public async Task<JobResponseDTO> RejectJobAsync(int jobId, int rejectedByUserId
             Requirements = job.Requirements,
             Responsibilities = job.Responsibilities,
             Location = job.Location,
-            JobTypes = job.JobJobTypes?.Select(jjt => jjt.JobType.Name).ToList() ?? new List<string>(),
             Deadline = job.DeadlineDate,
             Status = job.Status,
+            ApplicationCount = job.Applications?.Count ?? 0,
             PostedAt = job.PostedAt,
             UpdatedAt = job.UpdatedAt,
             ViewsCount = job.ViewsCount,
             Openings = job.Openings,
             ApprovedBy = job.ApprovedBy,
-            ApprovedAt = job.ApprovedAt
+            ApprovedAt = job.ApprovedAt,
+            JobTypes = job.JobJobTypes?
+            .Select(jjt => jjt.JobType?.Name ?? string.Empty)
+            .Where(name => !string.IsNullOrEmpty(name))
+            .ToList() ?? new List<string>()
         };
     }
 
