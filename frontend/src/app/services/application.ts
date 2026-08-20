@@ -25,6 +25,10 @@ export class ApplicationService {
     return this.http.get(`${this.apiUrl}/employer-applications`);
   }
 
+  getJobApplications(jobId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/job/${jobId}`);
+  }
+
   updateApplicationStatus(applicationId: number, status: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${applicationId}/status`, { status });
   }
