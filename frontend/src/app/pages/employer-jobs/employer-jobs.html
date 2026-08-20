@@ -1,0 +1,49 @@
+<app-navbar></app-navbar>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">My Jobs</h1>
+    <a routerLink="/employer/jobs/post" class="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+      Post a New Job
+    </a>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+    <div class="text-gray-500 text-sm">Loading jobs...</div>
+  </div>
+
+  <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && jobs.length === 0" class="bg-white rounded-xl shadow p-8 text-center">
+    <p class="text-gray-500 text-sm">You haven't posted any jobs yet.</p>
+    <a routerLink="/employer/jobs/post" class="inline-block mt-3 text-blue-800 hover:underline font-medium text-sm">
+      Post your first job
+    </a>
+  </div>
+
+  <div class="grid gap-4">
+    <div *ngFor="let job of jobs" class="bg-white rounded-xl shadow p-5 flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div>
+        <h3 class="font-semibold text-gray-800 text-lg">{{ job.title }}</h3>
+        <p class="text-sm text-gray-500 mt-1">{{ job.location || 'Location not specified' }}</p>
+        <div class="flex flex-wrap gap-3 mt-2">
+          <span class="text-xs text-gray-500">Posted: {{ job.createdAt | date:'mediumDate' }}</span>
+          <span class="text-xs text-gray-500">Applications: {{ job.applicationCount || 0 }}</span>
+          <span class="text-xs px-2 py-1 rounded-full {{ getStatusBadge(job.status) }}">{{ job.status || 'Active' }}</span>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-3 md:mt-0">
+        <a [routerLink]="['/employer/jobs', job.id]" class="text-xs bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded transition">
+          View Job
+        </a>
+        <a [routerLink]="['/employer/jobs', job.id, 'applications']" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded transition">
+          Applications
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
