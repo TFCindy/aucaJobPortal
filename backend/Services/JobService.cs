@@ -317,7 +317,7 @@ public async Task<JobResponseDTO> RejectJobAsync(int jobId, int rejectedByUserId
             Requirements = job.Requirements,
             Responsibilities = job.Responsibilities,
             Location = job.Location,
-            Deadline = job.DeadlineDate,
+            DeadlineDate = job.DeadlineDate,
             Status = job.Status,
             ApplicationCount = job.Applications?.Count ?? 0,
             PostedAt = job.PostedAt,
@@ -326,6 +326,9 @@ public async Task<JobResponseDTO> RejectJobAsync(int jobId, int rejectedByUserId
             Openings = job.Openings,
             ApprovedBy = job.ApprovedBy,
             ApprovedAt = job.ApprovedAt,
+            JobTypeIds = job.JobJobTypes?
+            .Select(jjt => jjt.JobTypeId)
+            .ToList() ?? new List<int>(),
             JobTypes = job.JobJobTypes?
             .Select(jjt => jjt.JobType?.Name ?? string.Empty)
             .Where(name => !string.IsNullOrEmpty(name))

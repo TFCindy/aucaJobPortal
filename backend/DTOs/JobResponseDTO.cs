@@ -10,7 +10,7 @@ public class JobResponseDTO
     public string? Requirements { get; set; }
     public string? Responsibilities { get; set; }
     public string? Location { get; set; }
-    public DateTime? Deadline { get; set; }
+    public DateTime? DeadlineDate { get; set; }
     public string Status { get; set; } = string.Empty;
     public DateTime PostedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -21,4 +21,5 @@ public class JobResponseDTO
     public bool IsActive => Status == "active";
     public int ApplicationCount { get; set; }
     public List<string> JobTypes { get; set; } = new();
+    public List<int> JobTypeIds { get; set; } = new();
 }
