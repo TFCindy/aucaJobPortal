@@ -11,6 +11,7 @@ import { EmployerApplications } from './pages/employer-applications/employer-app
 import { EmployerJobs } from './pages/employer-jobs/employer-jobs';
 import { JobDetails } from './pages/job-details/job-details';
 import { ApplicationDetails } from './pages/application-details/application-details';
+import { UpdateJob } from './pages/update-job/update-job';
 
 
 export const routes: Routes = [
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'employer/jobs/:id/applications', component: JobApplications, canActivate: [authGuard] },
   { path: 'employer/applications', component: EmployerApplications, canActivate: [authGuard] },
   { path: 'employer/applications/:id', component: ApplicationDetails, canActivate: [authGuard] },
+  { path: 'employer/jobs/:id/edit', component: UpdateJob, canActivate: [authGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];
