@@ -140,4 +140,27 @@ public class ApplicationsController : ControllerBase
             return BadRequest(new { success = false, message = ex.Message });
         }
     }
+
+     // ─── GET ALL APPLICATIONS FOR EMPLOYER ───
+    [HttpGet("employer-applications")]
+    [Authorize]
+    public async Task<IActionResult> GetEmployerApplications()
+    {
+       try
+           {
+        var userId = GetUserId();
+        var employerProfile = await _profileService.GetEmployerProfileAsync(userId);
+        var applications = await _applicationService.GetEmployerApplicationsAsync(employerProfile.Id);
+        return Ok(new 
+        { 
+            success = true, 
+            data = applications,
+            count = applications?.Count() ?? 0
+        });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
 }

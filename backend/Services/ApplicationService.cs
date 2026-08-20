@@ -266,6 +266,11 @@ public class ApplicationService : IApplicationService
             JobTitle = application.Job?.Title ?? "Unknown Job",
             CompanyName = application.Job?.Employer?.CompanyName ?? "Unknown Company",
             StudentName = application.Student?.User?.FullName ?? "Unknown Student",
+            StudentIdNumber = application.Student?.Id ?? 0,  
+            StudentEmail = application.Student?.User?.Email ?? "N/A",  
+            StudentPhone = application.Student?.User?.Phone ?? "N/A",  
+            Program = application.Student?.Program ?? "N/A", 
+            YearOfStudy = application.Student?.YearOfStudy,  
             CoverLetter = application.CoverLetter,
             Status = application.Status,
             AppliedAt = application.AppliedAt,
@@ -279,4 +284,30 @@ public class ApplicationService : IApplicationService
             EducationDescription = application.EducationDescription
         };
     }
+
+    public async Task<IEnumerable<ApplicationResponseDTO>> GetEmployerApplicationsAsync(int employerId)
+{
+    var applications = await _context.Applications
+        .Include(a => a.Job)
+        .Include(a => a.Student)
+            .ThenInclude(s => s.User)
+        .Where(a => a.Job.EmployerId == employerId)
+        .OrderByDescending(a => a.AppliedAt)
+        .Select(a => new ApplicationResponseDTO
+        {
+            Id = a.Id,
+            JobId = a.JobId,
+            JobTitle = a.Job.Title,
+            StudentIdNumber = a.StudentId,
+            StudentName = a.Student.User.FullName,
+            StudentEmail = a.Student.User.Email,
+            AppliedAt = a.AppliedAt,
+            Status = a.Status,
+            CoverLetter = a.CoverLetter,
+            CvFilePath = a.CvFilePath
+        })
+        .ToListAsync();
+    
+    return applications;
+}
 }

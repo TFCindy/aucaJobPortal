@@ -13,4 +13,5 @@ public interface IApplicationService
         int applicationId, 
         int employerId, 
         UpdateApplicationStatusDTO dto);
+    Task<IEnumerable<ApplicationResponseDTO>> GetEmployerApplicationsAsync(int employerId);
 }
