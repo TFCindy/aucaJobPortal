@@ -11,4 +11,7 @@ public class CreateApplicationDTO
     public string? Skills { get; set; }
     public string? EducationLevel { get; set; }
     public string? EducationDescription { get; set; }
+    public int? CurrentYearOfStudy { get; set; }
+    public bool UseExistingCv { get; set; } = true;  // Default: use existing
+    public IFormFile? NewCvFile { get; set; } 
 }

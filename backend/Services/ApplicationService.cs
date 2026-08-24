@@ -3,6 +3,7 @@ using AucaJobPortalDotNet.DTOs;
 using AucaJobPortalDotNet.Models;
 using AucaJobPortalDotNet.Services.Interfaces;
 using AucaJobPortalDotNet.Interfaces;
+using AucaJobPortalDotNet.Helpers;
 
 namespace AucaJobPortalDotNet.Services;
 
@@ -61,7 +62,21 @@ public class ApplicationService : IApplicationService
     {
         throw new Exception("You have already applied to this job");
     }
+    
+     string? cvFilePath = null;
 
+    if (dto.UseExistingCv)
+    {
+        cvFilePath = student.CvFilePath;
+    }
+    else if (dto.NewCvFile != null && dto.NewCvFile.Length > 0)
+    {
+        cvFilePath = await FileUploadHelper.SaveFileAsync(
+            dto.NewCvFile,
+            "cvs",
+            $"cv_{student.Id}"
+        );
+    }
     using var transaction = await _context.Database.BeginTransactionAsync();
     try
     {
