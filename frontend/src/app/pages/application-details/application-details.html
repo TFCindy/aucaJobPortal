@@ -44,7 +44,6 @@
           <p class="text-sm text-gray-500">Phone</p>
           <p class="text-gray-800">{{ application.studentPhone || 'N/A' }}</p>
         </div>
-        
         <div>
           <p class="text-sm text-gray-500">Program</p>
           <p class="text-gray-800">{{ application.program || 'N/A' }}</p>
@@ -74,7 +73,7 @@
     <div class="mt-6 border-t border-gray-100 pt-6">
       <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wider">Update Status</h3>
       <div class="flex flex-wrap gap-4 mt-2">
-        <div class="flex-1 min-w-[200px]">
+        <div class="flex-1 min-w-50">
           <select [(ngModel)]="selectedStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
             <option *ngFor="let status of statuses" [value]="status">{{ status | titlecase }}</option>
           </select>

@@ -74,7 +74,7 @@
                         <div>
                             <p class="font-semibold text-gray-800">{{ app.candidateName || app.student?.user?.fullName }}</p>
                             <p class="text-sm text-gray-500">{{ app.jobTitle || app.job?.title }}</p>
-                            <p class="text-xs text-gray-400 mt-1">Applied {{ app.appliedAt | date:'mediumDate' }}</p>
+                            <p class="text-xs text-gray-400 mt-1">Applied: {{ app.appliedAt | date:'mediumDate' }}</p>
                         </div>
                         <div class="flex items-center gap-3 mt-2 md:mt-0">
                             <span class="text-xs px-3 py-1 rounded-full {{ getStatusBadgeClass(app.status) }}">
@@ -108,7 +108,7 @@
                         <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
                         <p class="text-sm text-gray-500 mt-1">{{ job.location || 'Location not specified' }}</p>
                         <p class="text-sm text-gray-500">Total Applications: {{ job.applicationCount || 0 }}</p>
-                        <p class="text-xs text-gray-400 mt-1">Posted {{ job.createdAt | date:'mediumDate' }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Posted: {{ job.postedAt | date:'mediumDate' }}</p>
                         <div class="flex gap-2 mt-3">
                             <a [routerLink]="['/employer/jobs', job.id]" 
                                class="text-xs bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded transition">

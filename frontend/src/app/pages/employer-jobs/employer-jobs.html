@@ -30,7 +30,7 @@
         <h3 class="font-semibold text-gray-800 text-lg">{{ job.title }}</h3>
         <p class="text-sm text-gray-500 mt-1">{{ job.location || 'Location not specified' }}</p>
         <div class="flex flex-wrap gap-3 mt-2">
-          <span class="text-xs text-gray-500">Posted: {{ job.createdAt | date:'mediumDate' }}</span>
+          <span class="text-xs text-gray-500">Posted: {{ job.postedAt | date:'mediumDate' }}</span>
           <span class="text-xs text-gray-500">Applications: {{ job.applicationCount || 0 }}</span>
           <span class="text-xs px-2 py-1 rounded-full {{ getStatusBadge(job.status) }}">{{ job.status || 'Active' }}</span>
         </div>
