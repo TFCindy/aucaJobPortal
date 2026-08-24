@@ -6,7 +6,7 @@ namespace AucaJobPortalDotNet.Models;
 public class ProgramApplication
 {
     [Column("id")]
-    public int Id { get; set; }
+    public int Id { get; private set; }
 
     [Column("program_id")]
     public int ProgramId { get; set; }
@@ -14,12 +14,9 @@ public class ProgramApplication
     [Column("student_id")]
     public int StudentId { get; set; }
 
-    [Column("application_date")]
-    public DateTime ApplicationDate { get; set; } = DateTime.UtcNow;
-
     [Column("status")]
-    public string Status { get; set; } = "Pending";
-    // "Pending", "Approved", "Rejected", "Waitlisted"
+    public string Status { get; set; } = "pending";
+    // "pending", "approved", "rejected", "waitlisted"
 
     [Column("motivation_letter")]
     public string? MotivationLetter { get; set; }
@@ -27,7 +24,6 @@ public class ProgramApplication
     [Column("additional_notes")]
     public string? AdditionalNotes { get; set; }
 
-    // ─── REVIEW ───
     [Column("reviewed_by")]
     public int? ReviewedBy { get; set; }
 
@@ -37,7 +33,6 @@ public class ProgramApplication
     [Column("reviewer_notes")]
     public string? ReviewerNotes { get; set; }
 
-    // ─── ATTENDANCE & COMPLETION ───
     [Column("attended")]
     public bool Attended { get; set; } = false;
 
@@ -47,20 +42,18 @@ public class ProgramApplication
     [Column("completion_certificate")]
     public string? CompletionCertificate { get; set; }
 
-    // ─── TIMESTAMPS ───
     [Column("created_at")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    // ─── NAVIGATION PROPERTIES ───
-    [ForeignKey("ProgramId")]
-    public virtual Program Program { get; set; } = null!;
+    [ForeignKey("program_id")]
+    public virtual CareerProgram Program { get; set; } = null!;
 
-    [ForeignKey("StudentId")]
+    [ForeignKey("student_id")]
     public virtual Student Student { get; set; } = null!;
 
-    [ForeignKey("ReviewedBy")]
+    [ForeignKey("reviewed_by")]
     public virtual CareerCounselor? ReviewedByCounselor { get; set; }
 }
