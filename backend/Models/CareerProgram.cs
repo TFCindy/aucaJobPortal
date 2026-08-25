@@ -29,10 +29,6 @@ public class CareerProgram
     [Column("type")]
     public string Type { get; set; } = string.Empty;
     // "training", "workshop", "seminar", "webinar", "bootcamp"
-    [Column("category_id")]
-    public int? CategoryId { get; set; }
-    [ForeignKey("CategoryId")]
-    public virtual ProgramCategory? Category { get; set; }
 
     [Column("level")]
     public string? Level { get; set; }

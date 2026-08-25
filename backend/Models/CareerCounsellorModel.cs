@@ -6,7 +6,7 @@ namespace AucaJobPortalDotNet.Models;
 public class CareerCounselor
 {
     [Column("id")]
-    public int Id { get; set; }
+    public int Id { get; private set; }
 
     [Column("user_id")]
     public int UserId { get; set; }
@@ -36,16 +36,14 @@ public class CareerCounselor
     public bool IsActive { get; set; } = true;
 
     [Column("created_at")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    // ─── NAVIGATION PROPERTIES ───
     [ForeignKey("UserId")]
     public virtual User User { get; set; } = null!;
 
-    public virtual ICollection<Program> Programs { get; set; } = [];
-
+    public virtual ICollection<CareerProgram> Programs { get; set; } = [];
     public virtual ICollection<ProgramApplication> ReviewedApplications { get; set; } = [];
 }

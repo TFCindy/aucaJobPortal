@@ -37,8 +37,11 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-
+builder.Services.AddScoped<ICareerProgramService, CareerProgramService>();
 builder.Services.AddScoped<IJobTypeService, JobTypeService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<ICounselorService, CounselorService>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Secret"]

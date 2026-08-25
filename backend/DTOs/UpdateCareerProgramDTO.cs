@@ -8,7 +8,6 @@ public class UpdateCareerProgramDTO
     public bool? IsExternal { get; set; }
     public string? ExternalOrganization { get; set; }
     public string? Type { get; set; }
-    public int? CategoryId { get; set; }
     public string? Level { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }

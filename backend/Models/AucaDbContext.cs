@@ -19,12 +19,12 @@ public class AucaDbContext : DbContext
     public DbSet<SavedJob> SavedJobs { get; set; } = null!;
     public DbSet<PasswordResetLog> PasswordResetLogs { get; set; } = null!;
     public DbSet<Job> Jobs { get; set; } = null!;
-    public DbSet<AuditLog> AUditLogs { get; set; } = null!;
+    public DbSet<AuditLog> AuditLogs { get; set; } = null!;
     public DbSet<Application> Applications { get; set; } = null!;
     public DbSet<JobType> JobTypes {get;set;} = null!;
     public DbSet<JobJobType> JobJobTypes {get;set;} = null!;
     public DbSet<CareerCounselor> CareerCounselors { get; set; }
-    public DbSet<Program> Programs { get; set; }
+    public DbSet<CareerProgram> CareerPrograms { get; set; }
     public DbSet<ProgramApplication> ProgramApplications { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -169,6 +169,12 @@ public class AucaDbContext : DbContext
     .WithMany(jt => jt.JobJobTypes)
     .HasForeignKey(jjt => jjt.JobTypeId)
     .OnDelete(DeleteBehavior.Cascade);
+
+    modelBuilder.Entity<ProgramApplication>()
+        .HasOne(p => p.Student)
+        .WithMany(s => s.ProgramApplications)
+        .HasForeignKey(p => p.StudentId);
+     
 
 
     

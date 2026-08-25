@@ -19,8 +19,6 @@ public class CreateCareerProgramDTO
     public string Type { get; set; } = string.Empty;
     // "training", "workshop", "seminar", "webinar", "bootcamp"
 
-    public int? CategoryId { get; set; }
-
     public string? Level { get; set; }
     // "beginner", "intermediate", "advanced", "all_levels"
 

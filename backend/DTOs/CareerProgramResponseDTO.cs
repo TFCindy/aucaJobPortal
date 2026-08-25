@@ -10,8 +10,6 @@ public class CareerProgramResponseDTO
     public bool IsExternal { get; set; }
     public string? ExternalOrganization { get; set; }
     public string Type { get; set; } = string.Empty;
-    public int? CategoryId { get; set; }
-    public string? CategoryName { get; set; }
     public string? Level { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }

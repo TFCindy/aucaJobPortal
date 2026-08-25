@@ -45,8 +45,7 @@ public class CareerProgramService : ICareerProgramService
             ShortDescription = dto.ShortDescription,
             IsExternal = dto.IsExternal,
             ExternalOrganization = dto.ExternalOrganization,
-            Type = dto.Type,
-            CategoryId = dto.CategoryId,
+            Type = dto.Type,    
             Level = dto.Level,
             StartDate = dto.StartDate,
             EndDate = dto.EndDate,
@@ -75,7 +74,6 @@ public class CareerProgramService : ICareerProgramService
         var program = await _context.CareerPrograms
             .Include(p => p.CareerCounselor)
                 .ThenInclude(c => c.User)
-            .Include(p => p.Category)
             .FirstOrDefaultAsync(p => p.Id == programId && p.IsActive);
 
         if (program == null)
@@ -91,7 +89,6 @@ public class CareerProgramService : ICareerProgramService
         var programs = await _context.CareerPrograms
             .Include(p => p.CareerCounselor)
                 .ThenInclude(c => c.User)
-            .Include(p => p.Category)
             .Where(p => p.CareerCounselorId == counselorId && p.IsActive)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
@@ -110,7 +107,7 @@ public class CareerProgramService : ICareerProgramService
         var query = _context.CareerPrograms
             .Include(p => p.CareerCounselor)
                 .ThenInclude(c => c.User)
-            .Include(p => p.Category)
+
             .Where(p => p.IsActive && p.Status != "cancelled")
             .AsQueryable();
 
@@ -140,7 +137,6 @@ public class CareerProgramService : ICareerProgramService
         var programs = await _context.CareerPrograms
             .Include(p => p.CareerCounselor)
                 .ThenInclude(c => c.User)
-            .Include(p => p.Category)
             .Where(p => p.IsActive
                 && p.Status == "published"
                 && p.RegistrationDeadline >= now
@@ -184,9 +180,6 @@ public class CareerProgramService : ICareerProgramService
 
         if (!string.IsNullOrEmpty(dto.Type))
             program.Type = dto.Type;
-
-        if (dto.CategoryId.HasValue)
-            program.CategoryId = dto.CategoryId;
 
         if (!string.IsNullOrEmpty(dto.Level))
             program.Level = dto.Level;
@@ -396,8 +389,6 @@ public class CareerProgramService : ICareerProgramService
             IsExternal = program.IsExternal,
             ExternalOrganization = program.ExternalOrganization,
             Type = program.Type,
-            CategoryId = program.CategoryId,
-            CategoryName = program.Category?.Name,
             Level = program.Level,
             StartDate = program.StartDate,
             EndDate = program.EndDate,
