@@ -173,8 +173,14 @@ public class AucaDbContext : DbContext
     modelBuilder.Entity<ProgramApplication>()
         .HasOne(p => p.Student)
         .WithMany(s => s.ProgramApplications)
-        .HasForeignKey(p => p.StudentId);
+        .HasForeignKey(p => p.StudentId)
+        .OnDelete(DeleteBehavior.Restrict);
      
+    modelBuilder.Entity<ProgramApplication>()
+        .HasOne(p => p.Program)
+        .WithMany(pg => pg.ProgramApplications)
+        .HasForeignKey(p => p.ProgramId)
+        .OnDelete(DeleteBehavior.Restrict);
 
 
     

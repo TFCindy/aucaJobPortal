@@ -84,24 +84,24 @@ public class RolesController : ControllerBase
     }
 
     [HttpPut("{id}/permissions")]
-    public async Task<IActionResult> UpdateRolePermissions(int id, [FromBody] UpdateRolePermissionsDTO dto)
+public async Task<IActionResult> UpdateRolePermissions(int id, [FromBody] UpdateRolePermissionsDTO dto)
+{
+    try
     {
-        try
+        if (!await _permissionService.HasPermissionAsync(GetRoleId(), "manage_roles"))
         {
-            if (!await _permissionService.HasPermissionAsync(GetRoleId(), "manage_roles"))
-            {
-                return Forbid();
-            }
-
-            var result = await _roleService.UpdateRolePermissionsAsync(id, dto.Permissions);
-            if (!result)
-                return NotFound(new { success = false, message = "Role not found" });
-
-            return Ok(new { success = true, message = "Permissions updated successfully" });
+            return Forbid();
         }
-        catch (Exception ex)
-        {
-            return BadRequest(new { success = false, message = ex.Message });
-        }
+
+        var result = await _roleService.UpdateRolePermissionsAsync(id, dto?.Permissions ?? new List<string>());
+        if (!result)
+            return NotFound(new { success = false, message = "Role not found" });
+
+        return Ok(new { success = true, message = "Permissions updated successfully" });
     }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
 }

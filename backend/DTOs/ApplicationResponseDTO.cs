@@ -24,6 +24,6 @@ public class ApplicationResponseDTO
     public string? CvFilePath { get; set; }
     public string? ProfessionalExperience { get; set; }
     public string? Skills { get; set; }
-    public string? EducationLevel { get; set; }
-    public string? EducationDescription { get; set; }
+    public int? StudentYearAtApplication { get; set; }
+
 }

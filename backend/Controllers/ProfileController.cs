@@ -46,19 +46,20 @@ public class ProfileController : ControllerBase
 
     //UPDATE STUDENT PROFILE
     [HttpPatch("student")]
-    public async Task<IActionResult> UpdateStudentProfile([FromBody] UpdateStudentProfileDTO dto)
+[Authorize]
+public async Task<IActionResult> UpdateStudentProfile([FromForm] UpdateStudentProfileDTO dto)
+{
+    try
     {
-        try
-        {
-            var userId = GetUserId();
-            var profile = await _profileService.UpdateStudentProfileAsync(userId, dto);
-            return Ok(new { success = true, message = "Profile updated successfully", data = profile });
-        }
-        catch (Exception ex)
-        {
-            return NotFound(new { success = false, message = ex.Message });
-        }
+        var userId = GetUserId();
+        var profile = await _profileService.UpdateStudentProfileAsync(userId, dto);
+        return Ok(new { success = true, message = "Profile updated successfully", data = profile });
     }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
 
     // GET EMPLOYER PROFILE
     [HttpGet("employer")]

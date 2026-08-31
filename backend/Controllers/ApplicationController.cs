@@ -28,21 +28,22 @@ public class ApplicationsController : ControllerBase
     }
 
     // ─── APPLY FOR A JOB ───
-    [HttpPost]
-    [Authorize]
-    public async Task<IActionResult> Apply([FromBody] CreateApplicationDTO dto)
+    [HttpPost("apply/{jobId}")]
+[Authorize]
+public async Task<IActionResult> ApplyToJob(int jobId, [FromForm] CreateApplicationDTO dto)
+{
+    try
     {
-        try
-        {
-            var userId = GetUserId();
-            var application = await _applicationService.ApplyAsync(userId, dto);
-            return Ok(new { success = true, message = "Application submitted successfully", data = application });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { success = false, message = ex.Message });
-        }
+        var userId = GetUserId();
+        dto.JobId = jobId;
+        var application = await _applicationService.ApplyAsync(userId, dto);
+        return Ok(new { success = true, message = "Application submitted successfully", data = application });
     }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
 
     // ─── GET MY APPLICATIONS ───
     [HttpGet("my-applications")]
@@ -157,6 +158,22 @@ public class ApplicationsController : ControllerBase
             data = applications,
             count = applications?.Count() ?? 0
         });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
+
+[HttpGet("status/{jobId}")]
+[Authorize]
+public async Task<IActionResult> GetApplicationStatus(int jobId)
+{
+    try
+    {
+        var userId = GetUserId();
+        var hasApplied = await _applicationService.CheckApplicationStatusAsync(jobId, userId);
+        return Ok(new { success = true, data = new { hasApplied = hasApplied } });
     }
     catch (Exception ex)
     {

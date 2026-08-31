@@ -16,6 +16,8 @@ public class StudentProfileDTO
     public string? ProfilePicture { get; set; }
     public string? CvFilePath { get; set; }
     public bool EmailNotificationsEnabled { get; set; }
+     public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
 }
 
 public class UpdateStudentProfileDTO
@@ -28,7 +30,9 @@ public class UpdateStudentProfileDTO
     public string? Phone { get; set; }
     public string? Skills { get; set; }
     public string? Bio { get; set; }
-    public string? ProfilePicture { get; set; }
-    public string? CvFilePath { get; set; }
+    public IFormFile? ProfilePicture { get; set; }
+    public IFormFile? CvFile { get; set; }
     public bool EmailNotificationsEnabled { get; set; }
+
+   
 }

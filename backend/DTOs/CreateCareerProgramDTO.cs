@@ -42,4 +42,9 @@ public class CreateCareerProgramDTO
 
     public bool IsFree { get; set; } = true;
     public decimal? Cost { get; set; }
+    public IFormFile? Image { get; set; }
+    public DateTime PublishedAt{get;set;}
+
+    public string? Status { get; set; }
 }
+

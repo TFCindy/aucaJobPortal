@@ -1,0 +1,125 @@
+<app-navbar></app-navbar>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Welcome back, {{ counselorName }}!</h1>
+      <p class="text-gray-500 text-sm mt-1">Manage your career programs and student applications</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a routerLink="/counselor/programs/create" 
+         class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition duration-200 shadow-sm hover:shadow">
+        + Create Program
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-20">
+    <div class="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+    <p class="text-gray-400 text-sm mt-4">Loading dashboard...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center justify-between">
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div *ngIf="!isLoading" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 text-center hover:shadow-md transition">
+      <p class="text-2xl font-bold text-blue-600">{{ totalPrograms }}</p>
+      <p class="text-sm text-gray-500 mt-1">Total Programs</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 text-center hover:shadow-md transition">
+      <p class="text-2xl font-bold text-green-600">{{ publishedPrograms }}</p>
+      <p class="text-sm text-gray-500 mt-1">Published</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 text-center hover:shadow-md transition">
+      <p class="text-2xl font-bold text-yellow-600">{{ draftPrograms }}</p>
+      <p class="text-sm text-gray-500 mt-1">Drafts</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 text-center hover:shadow-md transition">
+      <p class="text-2xl font-bold text-purple-600">{{ totalStudents }}</p>
+      <p class="text-sm text-gray-500 mt-1">Total Students</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading" class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 text-center hover:shadow-md transition">
+      <p class="text-2xl font-bold text-indigo-600">{{ totalApplications }}</p>
+      <p class="text-sm text-gray-500 mt-1">Total Applications</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 text-center hover:shadow-md transition">
+      <p class="text-2xl font-bold text-orange-600">{{ pendingApplications }}</p>
+      <p class="text-sm text-gray-500 mt-1">Pending Review</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 text-center hover:shadow-md transition">
+      <p class="text-2xl font-bold text-teal-600">{{ activePrograms }}</p>
+      <p class="text-sm text-gray-500 mt-1">Active Programs</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">Recent Programs</h2>
+        <a routerLink="/counselor/programs" class="text-sm text-blue-600 hover:underline font-medium">View All →</a>
+      </div>
+
+      <div *ngIf="recentPrograms.length === 0" class="text-gray-400 text-sm text-center py-8">
+        No programs created yet.
+      </div>
+
+      <div class="space-y-3">
+        <div *ngFor="let program of recentPrograms" class="border border-gray-100 rounded-lg p-3 hover:border-blue-200 transition">
+          <div class="flex justify-between items-start">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-medium text-gray-800 text-sm truncate">{{ program.title }}</h3>
+              <p class="text-xs text-gray-500">{{ getTypeLabel(program.type) }}</p>
+            </div>
+            <span class="text-xs px-2 py-1 rounded-full {{ getStatusBadge(program.status) }}">
+              {{ program.status | titlecase }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-400">{{ program.applicationCount || 0 }} applications</p>
+            <a [routerLink]="['/counselor/programs', program.id]" 
+               class="text-xs text-blue-600 hover:underline font-medium">View</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">Recent Applications</h2>
+        <a routerLink="/counselor/applications" class="text-sm text-blue-600 hover:underline font-medium">View All →</a>
+      </div>
+
+      <div *ngIf="recentApplications.length === 0" class="text-gray-400 text-sm text-center py-8">
+        No applications received yet.
+      </div>
+
+      <div class="space-y-3">
+        <div *ngFor="let app of recentApplications" class="border border-gray-100 rounded-lg p-3 hover:border-blue-200 transition">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-medium text-gray-800 text-sm">{{ app.studentName || 'Unknown Student' }}</h3>
+              <p class="text-xs text-gray-500">{{ app.programTitle || 'Program' }}</p>
+            </div>
+            <span class="text-xs px-2 py-1 rounded-full {{ getApplicationStatusBadge(app.status) }}">
+              {{ app.status | titlecase }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-400">{{ app.applicationDate | date:'mediumDate' }}</p>
+            <a [routerLink]="['/counselor/applications', app.id]" 
+               class="text-xs text-blue-600 hover:underline font-medium">Review</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

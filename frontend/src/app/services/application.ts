@@ -20,6 +20,14 @@ export class ApplicationService {
     return this.http.post(`${this.apiUrl}/apply/${jobId}`, payload);
   }
 
+  checkApplicationStatus(jobId: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/status/${jobId}`);
+}
+
+  withdrawApplication(applicationId: number): Observable<any> {
+  return this.http.patch(`${this.apiUrl}/${applicationId}/withdraw`, {});
+}
+
   //EMPLOYER
   getEmployerApplications(): Observable<any> {
     return this.http.get(`${this.apiUrl}/employer-applications`);

@@ -20,10 +20,11 @@ public class CreateCounselorDTO
 
     [Required]
     public string Title { get; set; } = string.Empty;
+    [Required]
+    public string Phone { get; set; } = string.Empty;
 
     public string? Bio { get; set; }
     public string? Specialization { get; set; }
     public int? YearsOfExperience { get; set; }
     public string? OfficeLocation { get; set; }
-    public string? PhoneExtension { get; set; }
 }

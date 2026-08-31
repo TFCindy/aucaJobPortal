@@ -1,0 +1,215 @@
+<app-navbar></app-navbar>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Student Profile</h1>
+      <p class="text-gray-500 text-sm mt-1">Update your personal and academic information</p>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center justify-between">
+    <span>{{ successMessage }}</span>
+    <button (click)="clearMessages()" class="text-green-700 hover:text-green-900 font-bold text-lg leading-none">&times;</button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center justify-between">
+    <span>{{ errorMessage }}</span>
+    <button (click)="clearMessages()" class="text-red-700 hover:text-red-900 font-bold text-lg leading-none">&times;</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-20">
+    <div class="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+    <p class="text-gray-400 text-sm mt-4">Loading profile...</p>
+  </div>
+
+  <!-- Profile Form -->
+  <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="onSubmit()" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+
+    <!-- Profile Picture -->
+    <div class="flex flex-col items-center mb-6">
+      <div class="relative">
+        <div class="w-32 h-32 rounded-full bg-gray-200 overflow-hidden border-4 border-gray-300">
+          <img *ngIf="profilePicturePreview" [src]="profilePicturePreview" alt="Profile" class="w-full h-full object-cover">
+          <div *ngIf="!profilePicturePreview" class="w-full h-full flex items-center justify-center text-gray-400 text-4xl font-light">
+            {{ (form.get('fullName')?.value || 'User').charAt(0) }}
+          </div>
+        </div>
+        <label for="profilePicture" class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 cursor-pointer transition shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </label>
+        <input type="file" id="profilePicture" (change)="onProfilePictureSelected($event)" accept="image/*" class="hidden">
+      </div>
+      <p class="text-xs text-gray-400 mt-2">Click the camera icon to upload a profile picture</p>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- Full Name -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+        <input type="text" formControlName="fullName" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+        <div *ngIf="form.get('fullName')?.invalid && form.get('fullName')?.touched" class="text-red-500 text-xs mt-1">
+          Full name is required
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input type="email" formControlName="email" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
+               readonly>
+      </div>
+
+      <!-- Phone -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+        <input type="tel" formControlName="phone" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="e.g., 0788888888">
+      </div>
+
+      <!-- Student ID -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
+        <input type="text" formControlName="studentId" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
+               readonly>
+      </div>
+
+      <!-- Program -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Program</label>
+        <select formControlName="program" 
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+          <option value="">Select Program</option>
+          <option value="Undergraduate">Undergraduate</option>
+          <option value="Graduate">Graduate</option>
+        </select>
+      </div>
+
+      <!-- Faculty -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Faculty</label>
+        <input type="text" formControlName="faculty" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="e.g., Information Technology">
+      </div>
+
+      <!-- Department -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+        <input type="text" formControlName="department" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="e.g., Software Engineering">
+      </div>
+
+      <!-- Year of Study -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Year of Study</label>
+        <select formControlName="yearOfStudy" 
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+          <option [value]="null">Select Year</option>
+          <option [value]="1">Year 1</option>
+          <option [value]="2">Year 2</option>
+          <option [value]="3">Year 3</option>
+          <option [value]="4">Year 4</option>
+        </select>
+      </div>
+
+      <!-- Graduation Year -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
+        <input type="number" formControlName="graduationYear" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="e.g., 2026">
+      </div>
+
+      <!-- Skills -->
+      <div class="mb-4 md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+        <input type="text" formControlName="skills" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="e.g., Python, JavaScript, React, Project Management">
+        <p class="text-xs text-gray-400 mt-1">Separate skills with commas</p>
+      </div>
+
+      <!-- Bio -->
+      <div class="mb-4 md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+        <textarea formControlName="bio" rows="4" 
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  placeholder="Tell us a bit about yourself..."></textarea>
+      </div>
+
+      <!-- Email Notifications -->
+      <div class="mb-4 md:col-span-2">
+        <label class="flex items-center cursor-pointer">
+          <input type="checkbox" formControlName="emailNotificationsEnabled" 
+                 class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+          <span class="ml-2 text-sm text-gray-700">Receive email notifications</span>
+        </label>
+      </div>
+
+     <!-- CV Upload -->
+<div class="mb-4 md:col-span-2">
+  <label class="block text-sm font-medium text-gray-700 mb-1">CV / Resume</label>
+
+  @if (existingCvPath && !selectedCvFile) {
+    <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 mb-2">
+      <a [href]="existingCvPath" target="_blank" class="text-sm text-blue-800 hover:underline font-medium flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Current CV on file
+      </a>
+      <span class="text-xs text-gray-400">Upload a new file below to replace it</span>
+    </div>
+  }
+
+  @if (selectedCvFile) {
+    <div class="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 mb-2">
+      <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <span class="text-sm text-blue-800 font-medium">{{ selectedCvFile.name }}</span>
+      <span class="text-xs text-gray-500">(will be uploaded when you save)</span>
+    </div>
+  }
+
+  <div class="flex items-center gap-3">
+    <input type="file" (change)="onCvSelected($event)"
+           accept=".pdf,.doc,.docx"
+           class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+    <span class="text-xs text-gray-400">PDF, DOC, DOCX (Max 5MB)</span>
+  </div>
+</div>
+
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex gap-3 mt-6 pt-6 border-t border-gray-200">
+      <button type="submit" [disabled]="isSubmitting || form.invalid"
+              class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-8 py-2.5 rounded-lg text-sm font-medium transition duration-200 shadow-sm hover:shadow">
+        {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
+      </button>
+      <button type="button" (click)="router.navigate(['/student/dashboard'])"
+              class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg text-sm font-medium transition duration-200">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+
+</div>

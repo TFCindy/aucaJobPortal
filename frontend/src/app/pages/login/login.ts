@@ -61,6 +61,11 @@ export class Login implements OnInit {
           this.router.navigate(['/student/dashboard']);
         } else if (response.user.role === 'employer') {
           this.router.navigate(['/employer/dashboard']);
+        } else if (response.user.role === 'career_counselor') {
+          this.router.navigate(['/counselor/dashboard']); 
+        } 
+        else if (response.user.role === 'admin') {
+          this.router.navigate(['/admin/dashboard']); 
         } else {
           this.router.navigate(['/']);
         }

@@ -41,56 +41,88 @@ public class ProfileService : IProfileService
             Bio = student.Bio,
             ProfilePicture = student.ProfilePicture,
             CvFilePath = student.CvFilePath,
-            EmailNotificationsEnabled = student.EmailNotificationsEnabled
+            EmailNotificationsEnabled = student.EmailNotificationsEnabled,
+            FullName = student.User?.FullName ?? string.Empty,
+            Email = student.User?.Email ?? string.Empty
         };
     }
 
     // ─── UPDATE STUDENT PROFILE ───
     public async Task<StudentProfileDTO> UpdateStudentProfileAsync(int userId, UpdateStudentProfileDTO dto)
+{
+    var student = await _context.Students
+        .Include(s => s.User)
+        .FirstOrDefaultAsync(s => s.UserId == userId);
+
+    if (student == null)
     {
-        var student = await _context.Students
-            .Include(s => s.User)
-            .FirstOrDefaultAsync(s => s.UserId == userId);
-
-        if (student == null)
-        {
-            throw new Exception("Student profile not found");
-        }
-
-        // Update Student fields
-        
-        if (!string.IsNullOrEmpty(dto.Program))
-            student.Program = dto.Program;
-        
-        if (!string.IsNullOrEmpty(dto.Faculty))
-            student.Faculty = dto.Faculty;
-        
-        if (!string.IsNullOrEmpty(dto.Department))
-            student.Department = dto.Department;
-        
-        if (dto.YearOfStudy.HasValue)
-            student.YearOfStudy = dto.YearOfStudy;
-        
-        if (dto.GraduationYear.HasValue)
-            student.GraduationYear = dto.GraduationYear;
-        
-        if (!string.IsNullOrEmpty(dto.Skills))
-            student.Skills = dto.Skills;
-        
-        if (!string.IsNullOrEmpty(dto.Bio))
-            student.Bio = dto.Bio;
-
-        // Update User fields
-        if (!string.IsNullOrEmpty(dto.Phone))
-            student.User!.Phone = dto.Phone;
-            
-
-        student.User!.UpdatedAt = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
-
-        return await GetStudentProfileAsync(userId);
+        throw new Exception("Student profile not found");
     }
+
+    // Update Student fields
+    if (!string.IsNullOrEmpty(dto.Program))
+        student.Program = dto.Program;
+    
+    if (!string.IsNullOrEmpty(dto.Faculty))
+        student.Faculty = dto.Faculty;
+    
+    if (!string.IsNullOrEmpty(dto.Department))
+        student.Department = dto.Department;
+    
+    if (dto.YearOfStudy.HasValue)
+        student.YearOfStudy = dto.YearOfStudy;
+    
+    if (dto.GraduationYear.HasValue)
+        student.GraduationYear = dto.GraduationYear;
+    
+    if (!string.IsNullOrEmpty(dto.Skills))
+        student.Skills = dto.Skills;
+    
+    if (!string.IsNullOrEmpty(dto.Bio))
+        student.Bio = dto.Bio;
+
+    if (!string.IsNullOrEmpty(dto.Phone))
+        student.User!.Phone = dto.Phone;
+
+    if (dto.ProfilePicture != null && dto.ProfilePicture.Length > 0)
+    {
+        var picturePath = await SaveFileAsync(dto.ProfilePicture, "profiles", $"profile_{student.Id}");
+        student.ProfilePicture = picturePath;
+    }
+
+    if (dto.CvFile != null && dto.CvFile.Length > 0)
+    {
+        var cvPath = await SaveFileAsync(dto.CvFile, "cvs", $"cv_{student.Id}");
+        student.CvFilePath = cvPath;
+    }
+
+    student.User!.UpdatedAt = DateTime.UtcNow;
+
+    await _context.SaveChangesAsync();
+
+    return await GetStudentProfileAsync(userId);
+}
+
+// ─── ADD THIS HELPER METHOD ───
+private async Task<string> SaveFileAsync(IFormFile file, string subFolder, string prefix)
+{
+    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", subFolder);
+    if (!Directory.Exists(uploadsFolder))
+    {
+        Directory.CreateDirectory(uploadsFolder);
+    }
+
+    var extension = Path.GetExtension(file.FileName);
+    var fileName = $"{prefix}_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid()}{extension}";
+    var filePath = Path.Combine(uploadsFolder, fileName);
+
+    using (var stream = new FileStream(filePath, FileMode.Create))
+    {
+        await file.CopyToAsync(stream);
+    }
+
+    return $"/uploads/{subFolder}/{fileName}";
+}
 
     // ─── GET EMPLOYER PROFILE ───
     public async Task<EmployerProfileDTO> GetEmployerProfileAsync(int userId)

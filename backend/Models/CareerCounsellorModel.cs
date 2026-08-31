@@ -29,9 +29,6 @@ public class CareerCounselor
     [Column("office_location")]
     public string? OfficeLocation { get; set; }
 
-    [Column("phone_extension")]
-    public string? PhoneExtension { get; set; }
-
     [Column("is_active")]
     public bool IsActive { get; set; } = true;
 
@@ -45,5 +42,5 @@ public class CareerCounselor
     public virtual User User { get; set; } = null!;
 
     public virtual ICollection<CareerProgram> Programs { get; set; } = [];
-    public virtual ICollection<ProgramApplication> ReviewedApplications { get; set; } = [];
+
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NotificationService } from '../../services/notification';
@@ -15,7 +15,11 @@ export class Navbar implements OnInit {
   userRole: string | null = null;
   unreadCount = 0;
   isDropdownOpen = false;
+  showNotifications = false;
+  notifications: any[] = [];
   navLinks: any[] = [];
+  showSuccessMessage = false;
+  successMessage = '';
 
   constructor(
     private router: Router,
@@ -43,7 +47,7 @@ export class Navbar implements OnInit {
 
     this.notificationService.getUnreadCount().subscribe({
       next: (response) => {
-        this.unreadCount = response.data.unreadCount;
+        this.unreadCount = response.data?.unreadCount || 0;
         this.cdr.detectChanges();
       },
       error: () => {}
@@ -60,12 +64,20 @@ export class Navbar implements OnInit {
         { label: 'Applications', path: '/employer/applications' },
         { label: 'Post a Job', path: '/employer/jobs/post' }
       ];
-    } else {
+    }else if (this.userRole === 'career_counselor') {
+    this.navLinks = [
+      { label: 'Dashboard', path: '/counselor/dashboard' },
+      { label: 'My Programs', path: '/counselor/programs' },
+      { label: 'Applications', path: '/counselor/applications' }
+    ];
+  }else {
       this.navLinks = [
         { label: 'Home', path: '/student/dashboard' },
-        { label: 'Browse Jobs', path: '/jobs' },
-        { label: 'My Applications', path: '/applications' },
-        { label: 'Saved Jobs', path: '/saved-jobs' }
+        { label: 'Browse Jobs', path: '/student/jobs' },
+        { label: 'My Applications', path: '/student/applications' },
+        { label: 'Career Programs', path: '/student/programs' },
+        { label: 'Saved Jobs', path: '/student/saved-jobs' }
+        
       ];
     }
   }
@@ -80,6 +92,73 @@ export class Navbar implements OnInit {
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  // ─── NOTIFICATION DROPDOWN METHODS ───
+
+  toggleNotifications() {
+    this.showNotifications = !this.showNotifications;
+    if (this.showNotifications) {
+      this.loadNotifications();
+    }
+  }
+
+  loadNotifications() {
+    this.notificationService.getMyNotifications().subscribe({
+      next: (response) => {
+        this.notifications = response.data || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  markNotificationAsRead(notificationId: number) {
+    const notification = this.notifications.find(n => n.id === notificationId);
+    if (!notification || notification.isRead) return;
+
+    this.notificationService.markAsRead(notificationId).subscribe({
+      next: () => {
+        notification.isRead = true;
+        this.unreadCount = Math.max(0, this.unreadCount - 1);
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  markAllAsRead() {
+    this.notificationService.markAllAsRead().subscribe({
+      next: () => {
+        this.notifications.forEach(n => n.isRead = true);
+        this.unreadCount = 0;
+        this.showSuccessMessage = true;
+      this.successMessage = 'All notifications marked as read';
+      
+      // ─── HIDE MESSAGE AFTER 3 SECONDS ───
+      setTimeout(() => {
+        this.showSuccessMessage = false;
+        this.successMessage = '';
+      }, 3000);
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  // ─── CLOSE DROPDOWN WHEN CLICKING OUTSIDE ───
+ @HostListener('document:click', ['$event'])
+onClickOutside(event: any) {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.notification-container')) {
+    this.showNotifications = false;
+  }
+}
+
+  // ─── CLOSE DROPDOWN ON ESCAPE KEY ───
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    this.showNotifications = false;
   }
 
   logout() {

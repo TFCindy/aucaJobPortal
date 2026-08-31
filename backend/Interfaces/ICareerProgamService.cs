@@ -16,12 +16,10 @@ public interface ICareerProgramService
 
     // ─── APPLICATIONS ───
     Task<ProgramApplicationResponseDTO> ApplyToProgramAsync(
-        int programId, 
         int studentId, 
-        string? motivationLetter = null,
-        string? currentProgram = null,
-        int? currentYearOfStudy = null);
+    ProgramApplicationDTO dto);
     
     Task<List<ProgramApplicationResponseDTO>> GetProgramApplicationsAsync(int programId);
     Task<ProgramApplicationResponseDTO> UpdateApplicationStatusAsync(int applicationId, string status);
+    Task<List<ProgramApplicationResponseDTO>> GetMyProgramApplicationsAsync(int studentId);
 }

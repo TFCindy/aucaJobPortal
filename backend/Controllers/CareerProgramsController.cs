@@ -30,7 +30,7 @@ public class CareerProgramsController : ControllerBase
     // CREATE PROGRAM 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreateProgram([FromBody] CreateCareerProgramDTO dto)
+    public async Task<IActionResult> CreateProgram([FromForm] CreateCareerProgramDTO dto)
     {
         try
         {
@@ -43,6 +43,34 @@ public class CareerProgramsController : ControllerBase
             return BadRequest(new { success = false, message = ex.Message });
         }
     }
+
+    // GET: api/CareerPrograms/my-applications
+[HttpGet("my-applications")]
+[Authorize]
+public async Task<IActionResult> GetMyProgramApplications()
+{
+    try
+    {
+        var userId = GetUserId();
+        
+        // Get the student from the UserId
+        var student = await _context.Students
+            .FirstOrDefaultAsync(s => s.UserId == userId);
+
+        if (student == null)
+        {
+            return BadRequest(new { success = false, message = "Student profile not found" });
+        }
+
+        var applications = await _programService.GetMyProgramApplicationsAsync(student.Id);
+
+        return Ok(new { success = true, data = applications, count = applications.Count });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
 
     // GET PROGRAM BY ID
     [HttpGet("{id}")]
@@ -109,7 +137,7 @@ public class CareerProgramsController : ControllerBase
     //  UPDATE PROGRAM 
     [HttpPatch("{id}")]
     [Authorize]
-    public async Task<IActionResult> UpdateProgram(int id, [FromBody] UpdateCareerProgramDTO dto)
+    public async Task<IActionResult> UpdateProgram(int id, [FromForm] UpdateCareerProgramDTO dto)
     {
         try
         {
@@ -156,36 +184,39 @@ public class CareerProgramsController : ControllerBase
 
     //  APPLY TO PROGRAM (Student) 
     [HttpPost("{id}/apply")]
-    [Authorize]
-    public async Task<IActionResult> ApplyToProgram(int id, [FromBody] ProgramApplicationDTO dto)
+[Authorize]
+public async Task<IActionResult> ApplyToProgram(int id, [FromBody] ProgramApplicationDTO dto)
+{
+    try
     {
-        try
+        var userId = GetUserId();
+        var student = await _context.Students
+            .Include(s => s.User)
+            .FirstOrDefaultAsync(s => s.UserId == userId);
+
+        if (student == null)
         {
-            var userId = GetUserId();
-            var student = await _context.Students
-                .Include(s => s.User)
-                .FirstOrDefaultAsync(s => s.UserId == userId);
-
-            if (student == null)
-            {
-                return BadRequest(new { success = false, message = "Student profile not found" });
-            }
-
-            var application = await _programService.ApplyToProgramAsync(
-                id,
-                student.Id,
-                dto.MotivationLetter,
-                dto.CurrentProgram,
-                dto.CurrentYearOfStudy
-            );
-
-            return Ok(new { success = true, message = "Application submitted successfully", data = application });
+            return BadRequest(new { success = false, message = "Student profile not found" });
         }
-        catch (Exception ex)
+
+        if (string.IsNullOrEmpty(dto.CurrentProgram))
         {
-            return BadRequest(new { success = false, message = ex.Message });
+            dto.CurrentProgram = student.Program ?? "Unknown";
         }
+        if (!dto.CurrentYearOfStudy.HasValue)
+        {
+            dto.CurrentYearOfStudy = student.YearOfStudy ?? 0;
+        }
+
+        var application = await _programService.ApplyToProgramAsync(student.Id, dto);
+
+        return Ok(new { success = true, message = "Application submitted successfully", data = application });
     }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
 
     //GET PROGRAM APPLICATIONS (Counselor) 
     [HttpGet("{id}/applications")]

@@ -14,5 +14,8 @@ public interface IJobService
     Task<JobResponseDTO> ApproveJobAsync(int jobId, int approvedByUserId);
     Task<JobResponseDTO> RejectJobAsync(int jobId, int rejectedByUserId);
     Task<List<JobResponseDTO>> GetJobsByEmployerUserIdAsync(int userId);
+    Task SaveJobAsync(int jobId, int userId);
+    Task UnsaveJobAsync(int jobId, int userId);
+    Task<List<JobResponseDTO>> GetSavedJobsAsync(int userId);
 
 }

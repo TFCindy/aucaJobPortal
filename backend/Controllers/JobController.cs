@@ -252,5 +252,55 @@ public async Task<IActionResult> SearchJobs(
             return NotFound(new { success = false, message = ex.Message });
         }
     }
+    
+    // ─── SAVE JOB ───
+[HttpPost("{id}/save")]
+[Authorize]
+public async Task<IActionResult> SaveJob(int id)
+{
+    try
+    {
+        var userId = GetUserId();
+        await _jobService.SaveJobAsync(id, userId);
+        return Ok(new { success = true, message = "Job saved successfully" });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
 
+// ─── UNSAVE JOB ───
+[HttpDelete("{id}/save")]
+[Authorize]
+public async Task<IActionResult> UnsaveJob(int id)
+{
+    try
+    {
+        var userId = GetUserId();
+        await _jobService.UnsaveJobAsync(id, userId);
+        return Ok(new { success = true, message = "Job unsaved successfully" });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
+
+// ─── GET SAVED JOBS ───
+[HttpGet("saved")]
+[Authorize]
+public async Task<IActionResult> GetSavedJobs()
+{
+    try
+    {
+        var userId = GetUserId();
+        var jobs = await _jobService.GetSavedJobsAsync(userId);
+        return Ok(new { success = true, data = jobs });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
+    }
+}
 }

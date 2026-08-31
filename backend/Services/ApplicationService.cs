@@ -89,8 +89,7 @@ public class ApplicationService : IApplicationService
             UpdatedAt = DateTime.UtcNow,
             ProfessionalExperience = dto.ProfessionalExperience,
             Skills = dto.Skills,
-            EducationLevel = dto.EducationLevel,
-            EducationDescription = dto.EducationDescription
+            StudentYearAtApplication = dto.CurrentYearOfStudy ?? student.YearOfStudy
         };
 
         _context.Applications.Add(application);
@@ -181,6 +180,18 @@ public class ApplicationService : IApplicationService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> CheckApplicationStatusAsync(int jobId, int userId)
+{
+    var student = await _context.Students
+        .FirstOrDefaultAsync(s => s.UserId == userId);
+
+    if (student == null)
+        return false;
+
+    return await _context.Applications
+        .AnyAsync(a => a.JobId == jobId && a.StudentId == student.Id && a.Status != "withdrawn");
+}
 
     // ─── GET APPLICATIONS FOR A JOB (Employer) ───
     public async Task<List<ApplicationResponseDTO>> GetApplicationsForJobAsync(int jobId, int employerId)
@@ -295,8 +306,7 @@ public class ApplicationService : IApplicationService
             CvFilePath = application.CvFilePath,
             ProfessionalExperience = application.ProfessionalExperience,
             Skills = application.Skills,
-            EducationLevel = application.EducationLevel,
-            EducationDescription = application.EducationDescription
+            StudentYearAtApplication = application.StudentYearAtApplication
         };
     }
 

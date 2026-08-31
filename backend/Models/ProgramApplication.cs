@@ -16,31 +16,18 @@ public class ProgramApplication
 
     [Column("status")]
     public string Status { get; set; } = "pending";
-    // "pending", "approved", "rejected", "waitlisted"
 
     [Column("motivation_letter")]
     public string? MotivationLetter { get; set; }
 
-    [Column("additional_notes")]
-    public string? AdditionalNotes { get; set; }
+    [Column("student_program_at_application")]
+    public string StudentProgramAtApplication { get; set; } = string.Empty;
 
-    [Column("reviewed_by")]
-    public int? ReviewedBy { get; set; }
+    [Column("student_year_at_application")]
+    public int StudentYearAtApplication { get; set; }
 
     [Column("reviewed_at")]
     public DateTime? ReviewedAt { get; set; }
-
-    [Column("reviewer_notes")]
-    public string? ReviewerNotes { get; set; }
-
-    [Column("attended")]
-    public bool Attended { get; set; } = false;
-
-    [Column("completed")]
-    public bool Completed { get; set; } = false;
-
-    [Column("completion_certificate")]
-    public string? CompletionCertificate { get; set; }
 
     [Column("created_at")]
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
@@ -48,12 +35,6 @@ public class ProgramApplication
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    [ForeignKey("program_id")]
     public virtual CareerProgram Program { get; set; } = null!;
-
-    [ForeignKey("student_id")]
     public virtual Student Student { get; set; } = null!;
-
-    [ForeignKey("reviewed_by")]
-    public virtual CareerCounselor? ReviewedByCounselor { get; set; }
 }

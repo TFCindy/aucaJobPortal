@@ -37,6 +37,11 @@ public class CareerProgramService : ICareerProgramService
         if (dto.MaxParticipants < 1)
             throw new Exception("Max participants must be at least 1");
 
+        string? imageUrl = null;
+    if (dto.Image != null && dto.Image.Length > 0)
+    {
+        imageUrl = await SaveFileAsync(dto.Image, "programs", $"program_{Guid.NewGuid()}");
+    }
         var program = new CareerProgram
         {
             CareerCounselorId = counselor.Id,
@@ -47,6 +52,7 @@ public class CareerProgramService : ICareerProgramService
             ExternalOrganization = dto.ExternalOrganization,
             Type = dto.Type,    
             Level = dto.Level,
+            PublishedAt = dto.Status == "published" ? DateTime.UtcNow : null,
             StartDate = dto.StartDate,
             EndDate = dto.EndDate,
             RegistrationDeadline = dto.RegistrationDeadline,
@@ -57,8 +63,9 @@ public class CareerProgramService : ICareerProgramService
             MaxParticipants = dto.MaxParticipants,
             IsFree = dto.IsFree,
             Cost = dto.Cost,
-            Status = "draft",
+            Status = !string.IsNullOrEmpty(dto.Status) ? dto.Status : "draft",
             IsActive = true,
+            ImageUrl = imageUrl,
             UpdatedAt = DateTime.UtcNow
         };
 
@@ -84,23 +91,31 @@ public class CareerProgramService : ICareerProgramService
         return await MapToResponse(program);
     }
 
-    public async Task<List<CareerProgramResponseDTO>> GetProgramsByCounselorAsync(int counselorId)
+    public async Task<List<CareerProgramResponseDTO>> GetProgramsByCounselorAsync(int userId)
+{
+    var counselor = await _context.CareerCounselors
+        .FirstOrDefaultAsync(c => c.UserId == userId);
+
+    if (counselor == null)
     {
-        var programs = await _context.CareerPrograms
-            .Include(p => p.CareerCounselor)
-                .ThenInclude(c => c.User)
-            .Where(p => p.CareerCounselorId == counselorId && p.IsActive)
-            .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
-
-        var result = new List<CareerProgramResponseDTO>();
-        foreach (var program in programs)
-        {
-            result.Add(await MapToResponse(program));
-        }
-
-        return result;
+        return new List<CareerProgramResponseDTO>();
     }
+
+    var programs = await _context.CareerPrograms
+        .Include(p => p.CareerCounselor)
+            .ThenInclude(c => c.User)
+        .Where(p => p.CareerCounselorId == counselor.Id && p.IsActive)
+        .OrderByDescending(p => p.CreatedAt)
+        .ToListAsync();
+
+    var result = new List<CareerProgramResponseDTO>();
+    foreach (var program in programs)
+    {
+        result.Add(await MapToResponse(program));
+    }
+
+    return result;
+}
 
     public async Task<List<CareerProgramResponseDTO>> GetAllProgramsAsync(string? status = null, string? type = null)
     {
@@ -220,8 +235,19 @@ public class CareerProgramService : ICareerProgramService
         if (dto.IsFeatured.HasValue)
             program.IsFeatured = dto.IsFeatured.Value;
 
-        if (!string.IsNullOrEmpty(dto.ImageUrl))
-            program.ImageUrl = dto.ImageUrl;
+        if (dto.Image != null && dto.Image.Length > 0)
+    {
+        if (!string.IsNullOrEmpty(program.ImageUrl))
+        {
+            var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", program.ImageUrl.TrimStart('/'));
+            if (File.Exists(oldPath))
+            {
+                File.Delete(oldPath);
+            }
+        }
+        
+        program.ImageUrl = await SaveFileAsync(dto.Image, "programs", $"program_{Guid.NewGuid()}");
+    }
 
         program.UpdatedAt = DateTime.UtcNow;
 
@@ -229,6 +255,26 @@ public class CareerProgramService : ICareerProgramService
 
         return await MapToResponse(program);
     }
+
+    private async Task<string> SaveFileAsync(IFormFile file, string subFolder, string prefix)
+{
+    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", subFolder);
+    if (!Directory.Exists(uploadsFolder))
+    {
+        Directory.CreateDirectory(uploadsFolder);
+    }
+
+    var extension = Path.GetExtension(file.FileName);
+    var fileName = $"{prefix}_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid()}{extension}";
+    var filePath = Path.Combine(uploadsFolder, fileName);
+
+    using (var stream = new FileStream(filePath, FileMode.Create))
+    {
+        await file.CopyToAsync(stream);
+    }
+
+    return $"/uploads/{subFolder}/{fileName}";
+}
 
     public async Task<bool> PublishProgramAsync(int programId)
     {
@@ -275,65 +321,64 @@ public class CareerProgramService : ICareerProgramService
     }
 
     public async Task<ProgramApplicationResponseDTO> ApplyToProgramAsync(
-        int programId,
-        int studentId,
-        string? motivationLetter = null,
-        string? currentProgram = null,
-        int? currentYearOfStudy = null)
+    int studentId, 
+    ProgramApplicationDTO dto)
+{
+    var program = await _context.CareerPrograms
+        .FirstOrDefaultAsync(p => p.Id == dto.ProgramId && p.IsActive);
+
+    if (program == null)
     {
-        var program = await _context.CareerPrograms
-            .FirstOrDefaultAsync(p => p.Id == programId && p.IsActive);
-
-        if (program == null)
-        {
-            throw new Exception("Program not found");
-        }
-
-        if (program.Status != "published")
-        {
-            throw new Exception("Program is not open for applications");
-        }
-
-        if (program.CurrentParticipants >= program.MaxParticipants)
-        {
-            throw new Exception("Program is full");
-        }
-
-        if (DateTime.UtcNow > program.RegistrationDeadline)
-        {
-            throw new Exception("Registration deadline has passed");
-        }
-
-        var existingApplication = await _context.ProgramApplications
-            .FirstOrDefaultAsync(a => a.ProgramId == programId && a.StudentId == studentId);
-
-        if (existingApplication != null)
-        {
-            throw new Exception("You have already applied to this program");
-        }
-
-        var application = new ProgramApplication
-        {
-            ProgramId = programId,
-            StudentId = studentId,
-            Status = "pending",
-            MotivationLetter = motivationLetter,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        _context.ProgramApplications.Add(application);
-        await _context.SaveChangesAsync();
-
-        program.CurrentParticipants++;
-        if (program.CurrentParticipants >= program.MaxParticipants)
-        {
-            program.Status = "full";
-        }
-        program.ApplicationCount++;
-        await _context.SaveChangesAsync();
-
-        return await MapApplicationToResponse(application);
+        throw new Exception("Program not found");
     }
+
+    if (program.Status != "published")
+    {
+        throw new Exception("Program is not open for applications");
+    }
+
+    if (program.CurrentParticipants >= program.MaxParticipants)
+    {
+        throw new Exception("Program is full");
+    }
+
+    if (DateTime.UtcNow > program.RegistrationDeadline)
+    {
+        throw new Exception("Registration deadline has passed");
+    }
+
+    var existingApplication = await _context.ProgramApplications
+        .FirstOrDefaultAsync(a => a.ProgramId == dto.ProgramId && a.StudentId == studentId);
+
+    if (existingApplication != null)
+    {
+        throw new Exception("You have already applied to this program");
+    }
+
+    var application = new ProgramApplication
+    {
+        ProgramId = dto.ProgramId,
+        StudentId = studentId,
+        Status = "pending",
+        MotivationLetter = dto.MotivationLetter,
+        StudentProgramAtApplication = dto.CurrentProgram ?? "Unknown", 
+        StudentYearAtApplication = dto.CurrentYearOfStudy ?? 0,
+        UpdatedAt = DateTime.UtcNow
+    };
+
+    _context.ProgramApplications.Add(application);
+    await _context.SaveChangesAsync();
+
+    program.CurrentParticipants++;
+    if (program.CurrentParticipants >= program.MaxParticipants)
+    {
+        program.Status = "full";
+    }
+    program.ApplicationCount++;
+    await _context.SaveChangesAsync();
+
+    return await MapApplicationToResponse(application);
+}
     public async Task<List<ProgramApplicationResponseDTO>> GetProgramApplicationsAsync(int programId)
     {
         var applications = await _context.ProgramApplications
@@ -377,6 +422,24 @@ public class CareerProgramService : ICareerProgramService
         return await MapApplicationToResponse(application);
     }
 
+    public async Task<List<ProgramApplicationResponseDTO>> GetMyProgramApplicationsAsync(int studentId)
+{
+    var applications = await _context.ProgramApplications
+        .Include(a => a.Program)
+        .Include(a => a.Student)
+            .ThenInclude(s => s.User)
+        .Where(a => a.StudentId == studentId)
+        .OrderByDescending(a => a.CreatedAt)
+        .ToListAsync();
+
+    var result = new List<ProgramApplicationResponseDTO>();
+    foreach (var app in applications)
+    {
+        result.Add(await MapApplicationToResponse(app));
+    }
+
+    return result;
+}
     private async Task<CareerProgramResponseDTO> MapToResponse(CareerProgram program)
     {
         return new CareerProgramResponseDTO

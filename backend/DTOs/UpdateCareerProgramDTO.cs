@@ -21,5 +21,5 @@ public class UpdateCareerProgramDTO
     public decimal? Cost { get; set; }
     public string? Status { get; set; }
     public bool? IsFeatured { get; set; }
-    public string? ImageUrl { get; set; }
+    public IFormFile? Image { get; set; }
 }

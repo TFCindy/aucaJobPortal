@@ -28,11 +28,9 @@ public class CareerProgram
 
     [Column("type")]
     public string Type { get; set; } = string.Empty;
-    // "training", "workshop", "seminar", "webinar", "bootcamp"
 
     [Column("level")]
     public string? Level { get; set; }
-    // "beginner", "intermediate", "advanced", "all_levels"
 
     [Column("start_date")]
     public DateTime StartDate { get; set; }
@@ -69,7 +67,6 @@ public class CareerProgram
 
     [Column("status")]
     public string Status { get; set; } = "draft";
-    // "draft", "published", "upcoming", "ongoing", "completed", "cancelled", "full"
 
     [Column("published_at")]
     public DateTime? PublishedAt { get; set; }
@@ -105,8 +102,6 @@ public class CareerProgram
     [NotMapped]
     public int AvailableSpots => MaxParticipants - CurrentParticipants;
 
-    [ForeignKey("CareerCounselorId")]
     public virtual CareerCounselor CareerCounselor { get; set; } = null!;
-
-    public virtual ICollection<ProgramApplication> Applications { get; set; } = [];
+    public virtual ICollection<ProgramApplication> ProgramApplications { get; set; } = new List<ProgramApplication>();
 }

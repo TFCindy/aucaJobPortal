@@ -1,0 +1,100 @@
+<app-navbar></app-navbar>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Notifications</h1>
+      <p class="text-gray-500 text-sm mt-1">Stay updated with your latest activity</p>
+    </div>
+    <button (click)="markAllAsRead()" 
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition duration-200 shadow-sm hover:shadow">
+      Mark All as Read
+    </button>
+  </div>
+
+  <!-- ─── SUCCESS MESSAGE ─── -->
+  <div *ngIf="successMessage" class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center justify-between">
+    <span>{{ successMessage }}</span>
+    <button (click)="successMessage = ''" class="text-green-700 hover:text-green-900 font-bold text-lg leading-none">&times;</button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-20">
+    <div class="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+    <p class="text-gray-400 text-sm mt-4">Loading notifications...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-xl">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Notifications List -->
+  <div *ngIf="!isLoading" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    
+    <!-- Empty State -->
+    <div *ngIf="notifications.length === 0" class="flex flex-col items-center justify-center py-16">
+      <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      </div>
+      <p class="text-gray-500 font-medium">No notifications yet</p>
+      <p class="text-gray-400 text-sm mt-1">We'll notify you when something happens</p>
+    </div>
+
+    <!-- Notification Items -->
+    <div *ngFor="let notification of notifications; let last = last" 
+         class="p-5 hover:bg-gray-50 transition duration-150"
+         [class.border-b]="!last"
+         [class.border-gray-100]="!last"
+         [class.bg-blue-50]="!notification.isRead">
+      
+      <div class="flex items-start gap-4">
+        
+        <!-- Dot -->
+        <div class="flex-shrink-0 pt-1">
+          <span *ngIf="!notification.isRead" 
+                class="inline-block w-2.5 h-2.5 rounded-full bg-blue-600 shadow-sm shadow-blue-200"></span>
+          <span *ngIf="notification.isRead" 
+                class="inline-block w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-gray-800">
+            {{ notification.title }}
+          </p>
+          <p class="text-sm text-gray-600 mt-0.5 line-clamp-2">
+            {{ notification.message }}
+          </p>
+          <p class="text-xs text-gray-400 mt-1.5">
+            {{ notification.createdAt | date:'medium' }}
+          </p>
+        </div>
+
+        <!-- Mark as Read Button -->
+        <div class="flex-shrink-0">
+          <button *ngIf="!notification.isRead" 
+                  (click)="markAsRead(notification.id)"
+                  class="text-xs text-blue-600 hover:text-blue-800 font-medium transition hover:underline">
+            Mark read
+          </button>
+          <span *ngIf="notification.isRead" 
+                class="text-xs text-gray-400 font-medium">
+            Read
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div *ngIf="notifications.length > 0" class="px-5 py-3 bg-gray-50 border-t border-gray-100">
+      <p class="text-xs text-gray-400 text-center">
+        Showing {{ notifications.length }} notification{{ notifications.length > 1 ? 's' : '' }}
+      </p>
+    </div>
+  </div>
+</div>

@@ -39,4 +39,5 @@ public class CareerProgramResponseDTO
     // Counselor info
     public string CounselorName { get; set; } = string.Empty;
     public string CounselorDepartment { get; set; } = string.Empty;
+    
 }

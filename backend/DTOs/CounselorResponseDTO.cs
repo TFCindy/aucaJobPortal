@@ -10,7 +10,6 @@ public class CounselorResponseDTO
     public string? Specialization { get; set; }
     public int? YearsOfExperience { get; set; }
     public string? OfficeLocation { get; set; }
-    public string? PhoneExtension { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
 

@@ -1,0 +1,282 @@
+<app-navbar></app-navbar>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Edit Program</h1>
+      <p class="text-gray-500 text-sm mt-1">Update your career program</p>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center justify-between">
+    <span>{{ successMessage }}</span>
+    <button (click)="clearMessages()" class="text-green-700 hover:text-green-900 font-bold text-lg leading-none">&times;</button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center justify-between">
+    <span>{{ errorMessage }}</span>
+    <button (click)="clearMessages()" class="text-red-700 hover:text-red-900 font-bold text-lg leading-none">&times;</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-20">
+    <div class="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+    <p class="text-gray-400 text-sm mt-4">Loading program...</p>
+  </div>
+
+  <!-- Form -->
+  <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="onSubmit()" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+
+    <!-- Image Upload -->
+    <div class="mb-6">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Program Image</label>
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div class="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center">
+          <img *ngIf="imagePreview" [src]="imagePreview" alt="Preview" class="w-full h-full object-cover">
+          <span *ngIf="!imagePreview" class="text-gray-400 text-sm">No image</span>
+        </div>
+        <div>
+          <input type="file" (change)="onImageSelected($event)" accept="image/*" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+          <p class="text-xs text-gray-400 mt-1">Upload a new image (JPEG, PNG, GIF, WEBP - Max 5MB)</p>
+          <button *ngIf="imagePreview && existingImageUrl" type="button" (click)="removeImage()" 
+                  class="text-xs text-red-600 hover:text-red-800 mt-1">Remove New Image</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- Title -->
+      <div class="mb-4 md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
+        <input type="text" formControlName="title" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="Enter program title">
+        <div *ngIf="form.get('title')?.invalid && form.get('title')?.touched" class="text-red-500 text-xs mt-1">
+          Title is required
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4 md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Description <span class="text-red-500">*</span></label>
+        <textarea formControlName="description" rows="4" 
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  placeholder="Full description of the program"></textarea>
+        <div *ngIf="form.get('description')?.invalid && form.get('description')?.touched" class="text-red-500 text-xs mt-1">
+          Description is required
+        </div>
+      </div>
+
+      <!-- Short Description -->
+      <div class="mb-4 md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Short Description</label>
+        <input type="text" formControlName="shortDescription" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="Brief summary (shown in listings)">
+      </div>
+
+      <!-- Type -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Type <span class="text-red-500">*</span></label>
+        <select formControlName="type" 
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+          <option value="">Select Type</option>
+          <option value="training">Training</option>
+          <option value="workshop">Workshop</option>
+          <option value="seminar">Seminar</option>
+          <option value="webinar">Webinar</option>
+          <option value="bootcamp">Bootcamp</option>
+        </select>
+        <div *ngIf="form.get('type')?.invalid && form.get('type')?.touched" class="text-red-500 text-xs mt-1">
+          Type is required
+        </div>
+      </div>
+
+      <!-- Level -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Level</label>
+        <select formControlName="level" 
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+          <option value="">Select Level</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+          <option value="all_levels">All Levels</option>
+        </select>
+      </div>
+
+      <!-- Is External -->
+      <div class="mb-4">
+        <label class="flex items-center cursor-pointer">
+          <input type="checkbox" formControlName="isExternal" 
+                 class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+          <span class="ml-2 text-sm text-gray-700">External Program</span>
+        </label>
+      </div>
+
+      <!-- External Organization (conditional) -->
+      <div class="mb-4" *ngIf="form.get('isExternal')?.value">
+        <label class="block text-sm font-medium text-gray-700 mb-1">External Organization</label>
+        <input type="text" formControlName="externalOrganization" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="e.g., Google Africa">
+      </div>
+
+      <!-- Is Online -->
+      <div class="mb-4">
+        <label class="flex items-center cursor-pointer">
+          <input type="checkbox" formControlName="isOnline" 
+                 class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+          <span class="ml-2 text-sm text-gray-700">Online Program</span>
+        </label>
+      </div>
+
+      <!-- Location (conditional) -->
+      <div class="mb-4" *ngIf="!form.get('isOnline')?.value">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+        <input type="text" formControlName="location" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="e.g., Kigali, Rwanda">
+      </div>
+
+      <!-- Venue -->
+      <div class="mb-4" *ngIf="!form.get('isOnline')?.value">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Venue</label>
+        <input type="text" formControlName="venue" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="e.g., Room 304, CS Building">
+      </div>
+
+      <!-- Meeting Link (conditional) -->
+      <div class="mb-4" *ngIf="form.get('isOnline')?.value">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Meeting Link</label>
+        <input type="url" formControlName="meetingLink" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="https://meet.google.com/...">
+      </div>
+
+      <!-- Start Date -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date <span class="text-red-500">*</span></label>
+        <input type="date" formControlName="startDate" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+        <div *ngIf="form.get('startDate')?.invalid && form.get('startDate')?.touched" class="text-red-500 text-xs mt-1">
+          Start date is required
+        </div>
+      </div>
+
+      <!-- End Date -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">End Date <span class="text-red-500">*</span></label>
+        <input type="date" formControlName="endDate" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+        <div *ngIf="form.get('endDate')?.invalid && form.get('endDate')?.touched" class="text-red-500 text-xs mt-1">
+          End date is required
+        </div>
+      </div>
+
+      <!-- Registration Deadline -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Registration Deadline <span class="text-red-500">*</span></label>
+        <input type="date" formControlName="registrationDeadline" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+        <div *ngIf="form.get('registrationDeadline')?.invalid && form.get('registrationDeadline')?.touched" class="text-red-500 text-xs mt-1">
+          Registration deadline is required
+        </div>
+      </div>
+
+      <!-- Max Participants -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Max Participants <span class="text-red-500">*</span></label>
+        <input type="number" formControlName="maxParticipants" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="10">
+        <div *ngIf="form.get('maxParticipants')?.invalid && form.get('maxParticipants')?.touched" class="text-red-500 text-xs mt-1">
+          <span *ngIf="form.get('maxParticipants')?.errors?.['required']">Max participants is required</span>
+          <span *ngIf="form.get('maxParticipants')?.errors?.['min']">Must be at least 1</span>
+          <span *ngIf="form.get('maxParticipants')?.errors?.['max']">Must be at most 1000</span>
+        </div>
+      </div>
+
+      <!-- Is Free -->
+      <div class="mb-4">
+        <label class="flex items-center cursor-pointer">
+          <input type="checkbox" formControlName="isFree" 
+                 class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+          <span class="ml-2 text-sm text-gray-700">Free Program</span>
+        </label>
+      </div>
+
+      <!-- Cost (conditional) -->
+      <div class="mb-4" *ngIf="!form.get('isFree')?.value">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Cost (RWF)</label>
+        <input type="number" formControlName="cost" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+               placeholder="0">
+      </div>
+
+      <!-- Featured -->
+      <div class="mb-4">
+        <label class="flex items-center cursor-pointer">
+          <input type="checkbox" formControlName="isFeatured" 
+                 class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+          <span class="ml-2 text-sm text-gray-700">Featured Program</span>
+        </label>
+        <p class="text-xs text-gray-400 mt-1">Featured programs appear at the top of listings</p>
+      </div>
+
+      <!-- Current Status -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Current Status</label>
+        <div class="px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-700">
+          {{ form.get('status')?.value | titlecase }}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Publish Now Option -->
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <div class="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <input type="checkbox" 
+               [checked]="publishNow" 
+               (change)="publishNow = !publishNow"
+               id="publishNow"
+               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+        <label for="publishNow" class="text-sm font-medium text-gray-700 cursor-pointer">
+          Publish this program
+        </label>
+        <span class="text-xs text-gray-500 ml-2">
+          (Program will be visible to students)
+        </span>
+      </div>
+    </div>
+
+    <!-- Submit Buttons -->
+    <div class="flex gap-3 mt-6 pt-6 border-t border-gray-200">
+      <button type="submit" [disabled]="isSubmitting || form.invalid"
+              class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-8 py-2.5 rounded-lg text-sm font-medium transition duration-200 shadow-sm hover:shadow">
+        {{ isSubmitting ? 'Saving...' : 'Update Program' }}
+      </button>
+      <button type="button" (click)="goToPrograms()"
+              class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg text-sm font-medium transition duration-200">
+        Cancel
+      </button>
+    </div>
+
+    <!-- Status Note -->
+    <div class="mt-4 text-xs text-gray-500">
+      <p *ngIf="!publishNow"> Program will remain as <strong>{{ form.get('status')?.value | titlecase }}</strong>.</p>
+      <p *ngIf="publishNow"> Program will be <strong>Published</strong> and visible to students.</p>
+    </div>
+
+  </form>
+
+</div>

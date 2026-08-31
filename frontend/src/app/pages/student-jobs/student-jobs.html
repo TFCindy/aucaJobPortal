@@ -1,0 +1,139 @@
+<app-navbar></app-navbar>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Browse Jobs</h1>
+      <p class="text-gray-500 text-sm mt-1">Find your next opportunity</p>
+    </div>
+    <div class="text-sm text-gray-400">
+      {{ filteredJobs.length }} jobs available
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
+    {{ successMessage }}
+    <button (click)="clearMessages()" class="float-right font-bold">&times;</button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+    {{ errorMessage }}
+    <button (click)="clearMessages()" class="float-right font-bold">&times;</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white rounded-xl shadow p-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">Search</label>
+        <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" 
+               placeholder="Search by title, company, location..." 
+               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+      </div>
+      <div class="flex items-end">
+        <button (click)="resetFilters()" 
+                class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">
+          Reset Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+    <div class="text-gray-500 text-sm">Loading jobs...</div>
+  </div>
+
+  <!-- Jobs Grid -->
+  <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div *ngFor="let job of filteredJobs" class="bg-white rounded-xl shadow p-4 hover:shadow-lg transition">
+      
+     <!-- Job Header -->
+<div class="flex justify-between items-start">
+  <div class="flex-1">
+    <h3 class="font-semibold text-gray-800 text-lg">{{ job.title }}</h3>
+    <p class="text-sm text-gray-600 mt-0.5">{{ job.companyName }}</p>
+  </div>
+  <button (click)="toggleSaveJob(job.id)" 
+          [class.bg-blue-100]="isJobSaved(job.id)"
+          [class.text-blue-700]="isJobSaved(job.id)"
+          [class.bg-gray-100]="!isJobSaved(job.id)"
+          [class.text-gray-700]="!isJobSaved(job.id)"
+          class="text-xs font-medium px-3 py-1 rounded transition border border-gray-200">
+    {{ isJobSaved(job.id) ? 'Saved' : 'Save' }}
+  </button>
+</div>
+
+      <!-- Job Details -->
+      <div class="mt-3 space-y-1">
+        <p class="text-sm text-gray-500 flex items-center gap-1">
+           {{ job.location || 'Location not specified' }}
+        </p>
+        <div class="flex flex-wrap gap-1 mt-2">
+          <span *ngFor="let type of job.jobTypes || []" 
+                class="text-xs px-2 py-1 rounded-full {{ getJobTypeBadge(type) }}">
+            {{ type }}
+          </span>
+          <span *ngIf="!job.jobTypes || job.jobTypes.length === 0" 
+                class="text-xs text-gray-400">No types specified</span>
+        </div>
+        <p class="text-xs text-gray-400 mt-2">
+          Posted {{ job.postedAt | date:'mediumDate' }}
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-4 flex gap-2">
+        <button *ngIf="!isJobApplied(job.id)" 
+                (click)="openApplyModal(job)" 
+                class="flex-1 bg-blue-800 hover:bg-blue-900 text-white text-sm font-medium py-1.5 rounded transition">
+          Apply Now
+        </button>
+        <button *ngIf="isJobApplied(job.id)" 
+                class="flex-1 bg-blue-100 text-black-700 text-sm font-medium py-1.5 rounded cursor-default">
+           Applied
+        </button>
+       <a [routerLink]="['/jobs', job.id]" 
+   class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium px-3 py-1.5 rounded transition">
+  View
+</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredJobs.length === 0" class="bg-white rounded-xl shadow p-12 text-center">
+    <p class="text-gray-500 text-sm">No jobs found matching your search.</p>
+  </div>
+
+</div>
+
+<!-- Apply Modal -->
+<div *ngIf="showApplyModal && selectedJob" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-800">Apply for {{ selectedJob.title }}</h2>
+      <button (click)="closeApplyModal()" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    </div>
+
+    <div class="border-t border-gray-100 pt-4">
+      <p class="text-sm text-gray-600"><strong>Company:</strong> {{ selectedJob.companyName }}</p>
+      <p class="text-sm text-gray-600 mt-1"><strong>Location:</strong> {{ selectedJob.location || 'Not specified' }}</p>
+    </div>
+
+    <div class="mt-6 flex gap-3">
+      <button (click)="applyToJob()" [disabled]="isSubmitting"
+              class="flex-1 bg-blue-800 hover:bg-blue-900 disabled:bg-blue-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+        {{ isSubmitting ? 'Applying...' : 'Confirm Apply' }}
+      </button>
+      <button (click)="closeApplyModal()" 
+              class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

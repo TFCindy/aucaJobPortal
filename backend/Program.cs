@@ -42,6 +42,7 @@ builder.Services.AddScoped<IJobTypeService, JobTypeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ICounselorService, CounselorService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Secret"]
@@ -116,6 +117,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAngular");
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

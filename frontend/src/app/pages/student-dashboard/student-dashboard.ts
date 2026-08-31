@@ -1,3 +1,4 @@
+// student-dashboard.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -5,6 +6,9 @@ import { Navbar } from '../../components/navbar/navbar';
 import { JobService } from '../../services/job';
 import { ApplicationService } from '../../services/application';
 import { ProfileService } from '../../services/profile';
+import { NotificationService } from '../../services/notification';
+import { CounselorProgramService } from '../../services/counselor-program';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -17,6 +21,8 @@ export class StudentDashboard implements OnInit {
   profileCompletionPercent = 0;
 
   recentJobs: any[] = [];
+  recentPrograms: any[] = [];
+  recentNotifications: any[] = [];
   applicationStats = {
     pending: 0,
     reviewed: 0,
@@ -28,6 +34,8 @@ export class StudentDashboard implements OnInit {
     private jobService: JobService,
     private applicationService: ApplicationService,
     private profileService: ProfileService,
+    private notificationService: NotificationService,
+    private programService: CounselorProgramService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -39,15 +47,50 @@ export class StudentDashboard implements OnInit {
     }
 
     this.loadRecentJobs();
+    this.loadRecentPrograms();
     this.loadApplicationStats();
     this.loadProfileCompletion();
+    this.loadRecentNotifications();
+  }
+
+  loadRecentNotifications() {
+    this.notificationService.getMyNotifications().subscribe({
+      next: (response) => {
+        const unreadNotifications = response.data.filter((n: any) => !n.isRead);
+        this.recentNotifications = unreadNotifications.slice(0, 4);
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  markNotificationRead(notification: any) {
+    if (notification.isRead) {
+      return;
+    }
+    this.notificationService.markAsRead(notification.id).subscribe({
+      next: () => {
+        notification.isRead = true;
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
   }
 
   loadRecentJobs() {
     this.jobService.getActiveJobs().subscribe({
       next: (response) => {
-        // Just show the first 3 for a dashboard preview
         this.recentJobs = response.data.slice(0, 3);
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  loadRecentPrograms() {
+    this.programService.getAvailablePrograms().subscribe({
+      next: (response) => {
+        this.recentPrograms = (response.data || []).slice(0, 3);
         this.cdr.detectChanges();
       },
       error: () => {}
@@ -85,6 +128,33 @@ export class StudentDashboard implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {}
+    });
+  }
+
+  getImageUrl(imagePath: string): string {
+    if (!imagePath) return '';
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    return `${baseUrl}${imagePath}`;
+  }
+
+  getTypeLabel(type: string): string {
+    const typeMap: Record<string, string> = {
+      'training': 'Training',
+      'workshop': 'Workshop',
+      'seminar': 'Seminar',
+      'webinar': 'Webinar',
+      'bootcamp': 'Bootcamp'
+    };
+    return typeMap[type?.toLowerCase()] || type || 'Program';
+  }
+
+  formatDate(date: any): string {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
     });
   }
 }

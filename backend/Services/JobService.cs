@@ -367,4 +367,86 @@ public async Task<JobResponseDTO> RejectJobAsync(int jobId, int rejectedByUserId
     var jobs = await query.OrderByDescending(j => j.PostedAt).ToListAsync();
     return jobs.Select(MapToResponse).ToList();
 }
+
+// ─── SAVE JOB ───
+public async Task SaveJobAsync(int jobId, int userId)
+{
+    var student = await _context.Students
+        .FirstOrDefaultAsync(s => s.UserId == userId);
+
+    if (student == null)
+    {
+        throw new Exception("Student profile not found");
+    }
+
+    var job = await _context.Jobs
+        .FirstOrDefaultAsync(j => j.Id == jobId && j.Status == "active");
+
+    if (job == null)
+    {
+        throw new Exception("Job not found or not active");
+    }
+
+    // Check if already saved
+    var existing = await _context.SavedJobs
+        .FirstOrDefaultAsync(sj => sj.StudentId == student.Id && sj.JobId == jobId);
+
+    if (existing != null)
+    {
+        throw new Exception("Job already saved");
+    }
+
+    var savedJob = new SavedJob
+    {
+        StudentId = student.Id,
+        JobId = jobId
+    };
+
+    _context.SavedJobs.Add(savedJob);
+    await _context.SaveChangesAsync();
+}
+
+public async Task UnsaveJobAsync(int jobId, int userId)
+{
+    var student = await _context.Students
+        .FirstOrDefaultAsync(s => s.UserId == userId);
+
+    if (student == null)
+    {
+        throw new Exception("Student profile not found");
+    }
+
+    var savedJob = await _context.SavedJobs
+        .FirstOrDefaultAsync(sj => sj.StudentId == student.Id && sj.JobId == jobId);
+
+    if (savedJob == null)
+    {
+        throw new Exception("Job not saved");
+    }
+
+    _context.SavedJobs.Remove(savedJob);
+    await _context.SaveChangesAsync();
+}
+
+public async Task<List<JobResponseDTO>> GetSavedJobsAsync(int userId)
+{
+    var student = await _context.Students
+        .FirstOrDefaultAsync(s => s.UserId == userId);
+
+    if (student == null)
+    {
+        throw new Exception("Student profile not found");
+    }
+
+    var savedJobs = await _context.SavedJobs
+        .Include(sj => sj.Job)
+            .ThenInclude(j => j.Employer)
+        .Include(sj => sj.Job)
+            .ThenInclude(j => j.JobJobTypes)
+                .ThenInclude(jjt => jjt.JobType)
+        .Where(sj => sj.StudentId == student.Id)
+        .ToListAsync();
+
+    return savedJobs.Select(sj => MapToResponse(sj.Job)).ToList();
+}
 }

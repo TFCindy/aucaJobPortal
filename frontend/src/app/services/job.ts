@@ -20,6 +20,27 @@ export class JobService {
     return this.http.get(`${this.apiUrl}/${jobId}`);
   }
 
+
+  saveJob(jobId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${jobId}/save`, {});
+  }
+
+  unsaveJob(jobId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${jobId}/save`);
+  }
+
+  getSavedJobs(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/saved`);
+}
+
+  applyToJob(jobId: number, payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${jobId}/apply`, payload);
+  } 
+
+  checkApplicationStatus(jobId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${jobId}/application-status`);
+  }
+
   // EMPLOYER 
   getMyJobs(): Observable<any> {
     return this.http.get(`${this.apiUrl}/my-jobs`);

@@ -30,10 +30,6 @@ public class Application
     public string? ProfessionalExperience{get;set;}
     [Column("skills")]
     public string? Skills{get;set;}
-    [Column("education_level")]
-    public string? EducationLevel{get;set;}
-    [Column("education_description")]
-    public string? EducationDescription{get;set;}
     [Column("student_year_at_application")]
     public int? StudentYearAtApplication { get; set; }
     public virtual Job Job{get;set;}=null!;//job is not null,meaning each application shud belong to a job,so we make it not null and assure the compiler that it wiill never be null

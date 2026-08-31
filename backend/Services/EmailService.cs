@@ -202,8 +202,6 @@ public class EmailService : IEmailService
                         <li><strong>CV/Resume:</strong> {(string.IsNullOrEmpty(application.CvFilePath) ? "Not uploaded" : "Uploaded ✓")}</li>
                         <li><strong>Professional Experience:</strong> {(string.IsNullOrEmpty(application.ProfessionalExperience) ? "Not provided" : "Provided ✓")}</li>
                         <li><strong>Skills:</strong> {application.Skills ?? "Not specified"}</li>
-                        <li><strong>Education Level:</strong> {application.EducationLevel ?? "Not specified"}</li>
-                        <li><strong>Education Description:</strong> {(string.IsNullOrEmpty(application.EducationDescription) ? "Not provided" : "Provided ✓")}</li>
                     </ul>
 
                     <h3>Quick Actions:</h3>
