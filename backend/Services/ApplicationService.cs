@@ -263,16 +263,12 @@ public class ApplicationService : IApplicationService
 
         await transaction.CommitAsync();
 
-        // Email sent after commit, same reasoning as above
-        if (dto.Status is "shortlisted" or "rejected" or "hired")
-        {
-            await _emailService.SendApplicationStatusEmailAsync(
-                application.Student.User.Email,
-                application.Student.User.FullName,
-                application.Job.Title,
-                dto.Status
-            );
-        }
+        await _emailService.SendApplicationStatusEmailAsync(
+            application.Student.User.Email,
+            application.Student.User.FullName,
+            application.Job.Title,
+            dto.Status
+        );
 
         return await GetApplicationByIdAsync(applicationId);
     }

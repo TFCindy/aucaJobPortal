@@ -43,7 +43,16 @@ public class ProfileService : IProfileService
             CvFilePath = student.CvFilePath,
             EmailNotificationsEnabled = student.EmailNotificationsEnabled,
             FullName = student.User?.FullName ?? string.Empty,
-            Email = student.User?.Email ?? string.Empty
+            Email = student.User?.Email ?? string.Empty,
+            IsAlumni = student.IsAlumni,
+            DegreeClassification = student.DegreeClassification,
+            CurrentEmploymentStatus = student.CurrentEmploymentStatus,
+            CurrentEmployer = student.CurrentEmployer,
+            CurrentJobTitle = student.CurrentJobTitle,
+            Industry = student.Industry,
+            EmploymentStartDate = student.EmploymentStartDate,
+            TranscriptFilePath = student.TranscriptFilePath,
+            DiplomaFilePath = student.DiplomaFilePath
         };
     }
 
@@ -96,6 +105,46 @@ public class ProfileService : IProfileService
         student.CvFilePath = cvPath;
     }
 
+    if (dto.GraduationYear.HasValue)
+    student.GraduationYear = dto.GraduationYear;
+
+   if (!string.IsNullOrEmpty(dto.DegreeClassification))
+    student.DegreeClassification = dto.DegreeClassification;
+
+   if (!string.IsNullOrEmpty(dto.CurrentEmploymentStatus))
+    student.CurrentEmploymentStatus = dto.CurrentEmploymentStatus;
+
+   if (!string.IsNullOrEmpty(dto.CurrentEmployer))
+    student.CurrentEmployer = dto.CurrentEmployer;
+
+   if (!string.IsNullOrEmpty(dto.CurrentJobTitle))
+    student.CurrentJobTitle = dto.CurrentJobTitle;
+
+   if (!string.IsNullOrEmpty(dto.Industry))
+    student.Industry = dto.Industry;
+
+   if (dto.EmploymentStartDate.HasValue)
+    student.EmploymentStartDate = dto.EmploymentStartDate;
+    if (dto.TranscriptFile != null && dto.TranscriptFile.Length > 0)
+{
+    var transcriptPath = await SaveFileAsync(dto.TranscriptFile, "transcripts", $"transcript_{student.Id}");
+    student.TranscriptFilePath = transcriptPath;
+}
+
+   if (dto.DiplomaFile != null && dto.DiplomaFile.Length > 0)
+{
+    // Only allow if alumni
+    if (student.IsAlumni)
+    {
+        var diplomaPath = await SaveFileAsync(dto.DiplomaFile, "diplomas", $"diploma_{student.Id}");
+        student.DiplomaFilePath = diplomaPath;
+    }
+    else
+    {
+        throw new Exception("Only alumni can upload a diploma certificate");
+    }
+}
+
     student.User!.UpdatedAt = DateTime.UtcNow;
 
     await _context.SaveChangesAsync();
@@ -144,6 +193,7 @@ private async Task<string> SaveFileAsync(IFormFile file, string subFolder, strin
             CompanyDescription = employer.CompanyDescription,
             CompanyWebsite = employer.CompanyWebsite,
             Industry = employer.Industry,
+            Email = employer.User?.Email ?? string.Empty,
             CompanySize = employer.CompanySize,
             Location = employer.Location,
             CompanyLogo = employer.CompanyLogo,
@@ -183,6 +233,20 @@ private async Task<string> SaveFileAsync(IFormFile file, string subFolder, strin
         
         if (!string.IsNullOrEmpty(dto.Location))
             employer.Location = dto.Location;
+
+        if (dto.CompanyLogo != null && dto.CompanyLogo.Length > 0)
+        {
+            if (!string.IsNullOrEmpty(employer.CompanyLogo))
+            {
+                var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", employer.CompanyLogo.TrimStart('/'));
+                if (File.Exists(oldPath))
+                {
+                    File.Delete(oldPath);
+                }
+            }
+
+            employer.CompanyLogo = await SaveFileAsync(dto.CompanyLogo, "logos", $"logo_{employer.Id}");
+        }
 
         // Update User fields
         if (!string.IsNullOrEmpty(dto.Phone))
@@ -327,5 +391,73 @@ private async Task<string> SaveFileAsync(IFormFile file, string subFolder, strin
         await _context.SaveChangesAsync();
 
         return await GetAlumniProfileAsync(userId);
+    }
+
+    public async Task<CareerCounselorProfileDTO> GetCareerCounselorProfileAsync(int userId)
+    {
+        var counselor = await _context.CareerCounselors
+            .Include(c => c.User)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (counselor == null)
+        {
+            throw new Exception("Career counselor profile not found");
+        }
+
+        return new CareerCounselorProfileDTO
+        {
+            Id = counselor.Id,
+            UserId = counselor.UserId,
+            Department = counselor.Department,
+            Title = counselor.Title,
+            Bio = counselor.Bio,
+            Specialization = counselor.Specialization,
+            YearsOfExperience = counselor.YearsOfExperience,
+            OfficeLocation = counselor.OfficeLocation,
+            IsActive = counselor.IsActive,
+            FullName = counselor.User?.FullName ?? string.Empty,
+            Email = counselor.User?.Email ?? string.Empty,
+            Phone = counselor.User?.Phone
+        };
+    }
+
+    public async Task<CareerCounselorProfileDTO> UpdateCareerCounselorProfileAsync(int userId, UpdateCareerCounselorProfileDTO dto)
+    {
+        var counselor = await _context.CareerCounselors
+            .Include(c => c.User)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (counselor == null)
+        {
+            throw new Exception("Career counselor profile not found");
+        }
+
+        if (!string.IsNullOrEmpty(dto.Department))
+            counselor.Department = dto.Department;
+
+        if (!string.IsNullOrEmpty(dto.Title))
+            counselor.Title = dto.Title;
+
+        if (dto.Bio != null)
+            counselor.Bio = dto.Bio;
+
+        if (dto.Specialization != null)
+            counselor.Specialization = dto.Specialization;
+
+        if (dto.YearsOfExperience.HasValue)
+            counselor.YearsOfExperience = dto.YearsOfExperience;
+
+        if (dto.OfficeLocation != null)
+            counselor.OfficeLocation = dto.OfficeLocation;
+
+        if (!string.IsNullOrEmpty(dto.Phone))
+            counselor.User!.Phone = dto.Phone;
+
+        counselor.UpdatedAt = DateTime.UtcNow;
+        counselor.User!.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return await GetCareerCounselorProfileAsync(userId);
     }
 }

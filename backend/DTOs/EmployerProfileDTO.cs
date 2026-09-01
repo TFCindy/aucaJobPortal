@@ -14,6 +14,7 @@ public class EmployerProfileDTO
     public bool Verified { get; set; }
     public bool EmailNotificationsEnabled { get; set; }
     public string? Phone { get; set; }
+    public string Email { get; set; } = string.Empty;
 }
 
 public class UpdateEmployerProfileDTO
@@ -25,4 +26,5 @@ public class UpdateEmployerProfileDTO
     public string? CompanySize { get; set; }
     public string? Location { get; set; }
     public string? Phone { get; set; }
+    public IFormFile? CompanyLogo { get; set; }
 }

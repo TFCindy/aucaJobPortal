@@ -16,9 +16,7 @@ public class RegisterStudentDTO
     [Required]
     public bool IsAlumni { get; set; } = false;
     public string? Program{get;set;}
-    public string? Faculty{get;set;}
-    public string? Department{get;set;}
-    public int? YearOfStudy{get;set;}
-    public int? GraduationYear{get;set;}
+
+    
     
 }

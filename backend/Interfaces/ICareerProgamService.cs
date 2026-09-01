@@ -22,4 +22,5 @@ public interface ICareerProgramService
     Task<List<ProgramApplicationResponseDTO>> GetProgramApplicationsAsync(int programId);
     Task<ProgramApplicationResponseDTO> UpdateApplicationStatusAsync(int applicationId, string status);
     Task<List<ProgramApplicationResponseDTO>> GetMyProgramApplicationsAsync(int studentId);
+    Task<ProgramApplicationResponseDTO> GetProgramApplicationByIdAsync(int applicationId);
 }

@@ -8,10 +8,12 @@ namespace AucaJobPortalDotNet.Services;
 public class CareerProgramService : ICareerProgramService
 {
     private readonly AucaDbContext _context;
+    private readonly IEmailService _emailService;
 
-    public CareerProgramService(AucaDbContext context)
+    public CareerProgramService(AucaDbContext context, IEmailService emailService)
     {
         _context = context;
+        _emailService = emailService;
     }
 
    
@@ -377,6 +379,54 @@ public class CareerProgramService : ICareerProgramService
     program.ApplicationCount++;
     await _context.SaveChangesAsync();
 
+     try
+    {
+        var student = await _context.Students
+            .Include(s => s.User)
+            .FirstOrDefaultAsync(s => s.Id == studentId);
+
+        if (student?.User != null && !string.IsNullOrEmpty(student.User.Email))
+        {
+            await _emailService.SendProgramApplicationConfirmationEmailAsync(
+                student.User.Email,
+                student.User.FullName ?? "Student",
+                program.Title,
+                application.Id
+            );
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Failed to send student confirmation email: {ex.Message}");
+    }
+
+    try
+    {
+        var counselor = await _context.CareerCounselors
+            .Include(c => c.User)
+            .FirstOrDefaultAsync(c => c.Id == program.CareerCounselorId);
+
+        if (counselor != null && counselor.User != null)
+        {
+            var student = await _context.Students
+                .Include(s => s.User)
+                .FirstOrDefaultAsync(s => s.Id == studentId);
+
+            await _emailService.SendProgramApplicationSubmittedEmailAsync(
+                counselor.User.Email,
+                counselor.User.FullName,
+                student?.User?.FullName ?? "A student",
+                program.Title,
+                application.Id
+            );
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log error but don't fail the application
+        Console.WriteLine($"Failed to send email: {ex.Message}");
+    }
+
     return await MapApplicationToResponse(application);
 }
     public async Task<List<ProgramApplicationResponseDTO>> GetProgramApplicationsAsync(int programId)
@@ -401,6 +451,8 @@ public class CareerProgramService : ICareerProgramService
     {
         var application = await _context.ProgramApplications
             .Include(a => a.Program)
+            .Include(a => a.Student)
+                .ThenInclude(s => s.User)
             .FirstOrDefaultAsync(a => a.Id == applicationId);
 
         if (application == null)
@@ -408,16 +460,50 @@ public class CareerProgramService : ICareerProgramService
             throw new Exception("Application not found");
         }
 
-        var validStatuses = new[] { "pending", "approved", "rejected", "waitlisted" };
+        var validStatuses = new[] { "approved", "rejected" };
         if (!validStatuses.Contains(status))
         {
-            throw new Exception("Invalid status. Valid statuses: pending, approved, rejected, waitlisted");
+            throw new Exception("Invalid status. Valid statuses: approved, rejected");
         }
 
         application.Status = status;
+        application.ReviewedAt = DateTime.UtcNow;
         application.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        if (application.Student?.User != null && application.Program != null)
+        {
+            await _emailService.SendProgramApplicationStatusEmailAsync(
+                application.Student.User.Email,
+                application.Student.User.FullName,
+                application.Program.Title,
+                status
+            );
+        }
+
+        try
+    {
+        var student = application.Student;
+        var studentUser = student?.User;
+        var program = application.Program;
+
+        if (studentUser != null && !string.IsNullOrEmpty(studentUser.Email))
+        {
+            await _emailService.SendProgramApplicationStatusEmailAsync(
+                studentUser.Email,
+                studentUser.FullName ?? "Student",
+                program?.Title ?? "Program",
+                status
+            );
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log error but don't fail the status update
+        Console.WriteLine($"Failed to send email: {ex.Message}");
+    }
+
 
         return await MapApplicationToResponse(application);
     }
@@ -439,6 +525,22 @@ public class CareerProgramService : ICareerProgramService
     }
 
     return result;
+}
+
+public async Task<ProgramApplicationResponseDTO> GetProgramApplicationByIdAsync(int applicationId)
+{
+    var application = await _context.ProgramApplications
+        .Include(a => a.Program)
+        .Include(a => a.Student)
+            .ThenInclude(s => s.User)
+        .FirstOrDefaultAsync(a => a.Id == applicationId);
+
+    if (application == null)
+    {
+        throw new Exception("Program application not found");
+    }
+
+    return await MapApplicationToResponse(application);
 }
     private async Task<CareerProgramResponseDTO> MapToResponse(CareerProgram program)
     {

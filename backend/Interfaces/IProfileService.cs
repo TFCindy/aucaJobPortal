@@ -10,4 +10,6 @@ public interface IProfileService
     Task<EmployerProfileDTO> UpdateEmployerProfileAsync(int userId, UpdateEmployerProfileDTO dto);
     Task<AlumniProfileDTO> GetAlumniProfileAsync(int userId);
     Task<AlumniProfileDTO> UpdateAlumniProfileAsync(int userId, UpdateAlumniProfileDTO dto);
+    Task<CareerCounselorProfileDTO> GetCareerCounselorProfileAsync(int userId);
+    Task<CareerCounselorProfileDTO> UpdateCareerCounselorProfileAsync(int userId, UpdateCareerCounselorProfileDTO dto);
 }

@@ -130,6 +130,28 @@ public class EmailService : IEmailService
         return await SendEmailAsync(email, subject, body);
     }
 
+    public async Task<bool> SendProgramApplicationStatusEmailAsync(string email, string fullName, string programTitle, string status)
+    {
+        var subject = $"Program Application Update: {programTitle}";
+        var statusMessage = status switch
+        {
+            "approved" => "Congratulations! Your application has been approved.",
+            "rejected" => "Thank you for your interest. Unfortunately, your application was not approved at this time.",
+            _ => $"Your program application status has been updated to: {status}"
+        };
+
+        var body = $@"
+            <h2>Hi {fullName},</h2>
+            <p>{statusMessage}</p>
+            <p><strong>Program:</strong> {programTitle}</p>
+            <p>Log in to the AUCA Job Portal for more details.</p>
+            <hr />
+            <p style='color: #666; font-size: 12px;'>This is an automated notification from AUCA Job Portal.</p>
+        ";
+
+        return await SendEmailAsync(email, subject, body);
+    }
+
     // ─── NEW: SendApplicationNotificationsAsync (FOR BOTH STUDENT AND EMPLOYER) ───
     public async Task<bool> SendApplicationNotificationsAsync(
         Application application, 
@@ -304,6 +326,66 @@ public class EmailService : IEmailService
         
         return false;
     }
+}
+
+public async Task<bool> SendProgramApplicationSubmittedEmailAsync(string counselorEmail, string counselorName, string studentName, string programTitle, int applicationId)
+{
+    var subject = $"New Program Application: {studentName} applied to {programTitle}";
+    var frontendUrl = _configuration["FRONTEND_URL"] ?? "http://localhost:5173";
+    
+    var body = $@"
+        <h2>New Program Application Received</h2>
+        <p>Hi {counselorName},</p>
+        <p><strong>{studentName}</strong> has applied to your program: <strong>{programTitle}</strong>.</p>
+        
+        <h3>Quick Actions:</h3>
+        <ul>
+            <li><a href='{frontendUrl}/counselor/applications'>View All Applications</a></li>
+            <li><a href='{frontendUrl}/counselor/programs/{applicationId}/applications'>View This Application</a></li>
+        </ul>
+        
+        <hr />
+        <p style='color: #666; font-size: 12px;'>This is an automated notification from AUCA Job Portal.</p>
+    ";
+
+    return await SendEmailAsync(counselorEmail, subject, body, "ProgramApplicationSubmitted");
+}
+
+public async Task<bool> SendProgramApplicationConfirmationEmailAsync(string studentEmail, string studentName, string programTitle, int applicationId)
+{
+    var subject = $"Application Submitted: {programTitle}";
+    var frontendUrl = _configuration["FRONTEND_URL"] ?? "http://localhost:5173";
+    
+    var body = $@"
+        <h2>Application Submitted Successfully!</h2>
+        <p>Hi {studentName},</p>
+        <p>Your application for <strong>{programTitle}</strong> has been submitted successfully.</p>
+        
+        <h3>Application Details:</h3>
+        <ul>
+            <li><strong>Program:</strong> {programTitle}</li>
+            <li><strong>Application ID:</strong> {applicationId}</li>
+            <li><strong>Date Applied:</strong> {DateTime.Now:MMMM dd, yyyy HH:mm}</li>
+            <li><strong>Status:</strong> Pending Review</li>
+        </ul>
+
+        <h3>What happens next?</h3>
+        <ul>
+            <li>The career counselor will review your application</li>
+            <li>You'll receive email updates when your status changes</li>
+            <li>Check your application status anytime in your dashboard</li>
+        </ul>
+
+        <p><a href='{frontendUrl}/student/program-applications' 
+              style='background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;'>
+              View Your Applications
+        </a></p>
+
+        <hr />
+        <p style='color: #666; font-size: 12px;'>This is an automated notification from AUCA Job Portal. Good luck with your application!</p>
+    ";
+
+    return await SendEmailAsync(studentEmail, subject, body, "ProgramApplicationConfirmation");
 }
 
 }

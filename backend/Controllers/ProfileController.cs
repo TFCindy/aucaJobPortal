@@ -79,7 +79,7 @@ public async Task<IActionResult> UpdateStudentProfile([FromForm] UpdateStudentPr
 
     //  UPDATE EMPLOYER PROFILE
     [HttpPatch("employer")]
-    public async Task<IActionResult> UpdateEmployerProfile([FromBody] UpdateEmployerProfileDTO dto)
+    public async Task<IActionResult> UpdateEmployerProfile([FromForm] UpdateEmployerProfileDTO dto)
     {
         try
         {
@@ -122,6 +122,38 @@ public async Task<IActionResult> UpdateAlumniProfile([FromBody] UpdateAlumniProf
     catch (Exception ex)
     {
         return NotFound(new { success = false, message = ex.Message });
+    }
+}
+
+// ─── GET CAREER COUNSELOR PROFILE ───
+[HttpGet("counselor")]
+public async Task<IActionResult> GetCareerCounselorProfile()
+{
+    try
+    {
+        var userId = GetUserId();
+        var profile = await _profileService.GetCareerCounselorProfileAsync(userId);
+        return Ok(new { success = true, data = profile });
+    }
+    catch (Exception ex)
+    {
+        return NotFound(new { success = false, message = ex.Message });
+    }
+}
+
+// ─── UPDATE CAREER COUNSELOR PROFILE ───
+[HttpPatch("counselor")]
+public async Task<IActionResult> UpdateCareerCounselorProfile([FromBody] UpdateCareerCounselorProfileDTO dto)
+{
+    try
+    {
+        var userId = GetUserId();
+        var profile = await _profileService.UpdateCareerCounselorProfileAsync(userId, dto);
+        return Ok(new { success = true, message = "Profile updated successfully", data = profile });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { success = false, message = ex.Message });
     }
 }
 }

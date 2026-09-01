@@ -237,7 +237,7 @@ public async Task<IActionResult> ApplyToProgram(int id, [FromBody] ProgramApplic
     //  UPDATE APPLICATION STATUS (Counselor)
     [HttpPatch("applications/{applicationId}/status")]
     [Authorize]
-    public async Task<IActionResult> UpdateApplicationStatus(int applicationId, [FromBody] UpdateApplicationStatusDTO dto)
+    public async Task<IActionResult> UpdateApplicationStatus(int applicationId, [FromBody] UpdateProgramApplicationStatusDTO dto)
     {
         try
         {
@@ -249,4 +249,20 @@ public async Task<IActionResult> ApplyToProgram(int id, [FromBody] ProgramApplic
             return BadRequest(new { success = false, message = ex.Message });
         }
     }
+
+    // ─── GET PROGRAM APPLICATION BY ID ───
+[HttpGet("applications/{applicationId}")]
+[Authorize]
+public async Task<IActionResult> GetProgramApplicationById(int applicationId)
+{
+    try
+    {
+        var application = await _programService.GetProgramApplicationByIdAsync(applicationId);
+        return Ok(new { success = true, data = application });
+    }
+    catch (Exception ex)
+    {
+        return NotFound(new { success = false, message = ex.Message });
+    }
+}
 }

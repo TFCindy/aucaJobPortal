@@ -18,6 +18,15 @@ public class StudentProfileDTO
     public bool EmailNotificationsEnabled { get; set; }
      public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+     public string? DegreeClassification { get; set; }
+    public string? CurrentEmploymentStatus { get; set; }
+    public string? CurrentEmployer { get; set; }
+    public string? CurrentJobTitle { get; set; }
+    public string? Industry { get; set; }
+    public DateTime? EmploymentStartDate { get; set; }
+    public string? TranscriptFilePath { get; set; }
+    public string? DiplomaFilePath { get; set; }
+    public bool IsAlumni { get; set; }
 }
 
 public class UpdateStudentProfileDTO
@@ -33,6 +42,14 @@ public class UpdateStudentProfileDTO
     public IFormFile? ProfilePicture { get; set; }
     public IFormFile? CvFile { get; set; }
     public bool EmailNotificationsEnabled { get; set; }
+     public string? DegreeClassification { get; set; }
+    public string? CurrentEmploymentStatus { get; set; }
+    public string? CurrentEmployer { get; set; }
+    public string? CurrentJobTitle { get; set; }
+    public string? Industry { get; set; }
+    public DateTime? EmploymentStartDate { get; set; }
+    public IFormFile? TranscriptFile { get; set; }
+    public IFormFile? DiplomaFile { get; set; }
 
-   
+   public bool IsAlumni { get; set; }
 }
