@@ -68,8 +68,7 @@
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
         <input type="email" formControlName="email" 
-               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
-               readonly>
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed" readonly>
       </div>
 
       <!-- Phone -->
@@ -84,8 +83,7 @@
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
         <input type="text" formControlName="studentId" 
-               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
-               readonly>
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed" readonly>
       </div>
 
       <!-- Program -->
@@ -115,8 +113,8 @@
                placeholder="e.g., Software Engineering">
       </div>
 
-      <!-- Year of Study -->
-      <div class="mb-4">
+      <!-- Year of Study (Student only) -->
+      <div *ngIf="!isAlumni" class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Year of Study</label>
         <select formControlName="yearOfStudy" 
                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
@@ -126,14 +124,6 @@
           <option [value]="3">Year 3</option>
           <option [value]="4">Year 4</option>
         </select>
-      </div>
-
-      <!-- Graduation Year -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
-        <input type="number" formControlName="graduationYear" 
-               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-               placeholder="e.g., 2026">
       </div>
 
       <!-- Skills -->
@@ -153,6 +143,95 @@
                   placeholder="Tell us a bit about yourself..."></textarea>
       </div>
 
+      <!-- Alumni Information (Only shown for alumni) - SINGLE VERSION -->
+      <div *ngIf="isAlumni" class="mb-4 md:col-span-2">
+        <h3 class="text-sm font-semibold text-gray-700 border-b border-gray-200 pb-2 mb-3">Alumni Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Graduation Year -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
+            <input type="number" formControlName="graduationYear" 
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                   placeholder="e.g., 2024">
+          </div>
+
+          <!-- Degree Classification -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Degree Classification</label>
+            <select formControlName="degreeClassification" 
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+              <option value="">Select Classification</option>
+              <option *ngFor="let classification of degreeClassifications" [value]="classification">{{ classification }}</option>
+            </select>
+          </div>
+
+          <!-- Employment Status -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Employment Status</label>
+            <select formControlName="currentEmploymentStatus" 
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+              <option value="">Select Status</option>
+              <option *ngFor="let status of employmentStatuses" [value]="status">{{ status }}</option>
+            </select>
+          </div>
+
+          <!-- Employment Details - Show only if Employed or Self-Employed -->
+          <div *ngIf="form.get('currentEmploymentStatus')?.value === 'Employed' || form.get('currentEmploymentStatus')?.value === 'Self-Employed'" 
+               class="md:col-span-2">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Employment Details</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Current Employer / Business Name -->
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ form.get('currentEmploymentStatus')?.value === 'Self-Employed' ? 'Business Name' : 'Current Employer' }}
+                  </label>
+                  <input type="text" formControlName="currentEmployer" 
+                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                         [placeholder]="form.get('currentEmploymentStatus')?.value === 'Self-Employed' ? 'Your Business Name' : 'Company Name'">
+                </div>
+
+                <!-- Job Title (Only for Employed) -->
+                <div class="mb-4" *ngIf="form.get('currentEmploymentStatus')?.value === 'Employed'">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                  <input type="text" formControlName="currentJobTitle" 
+                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                         placeholder="Software Engineer">
+                </div>
+
+                <!-- Industry (Both Employed and Self-Employed) -->
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+                  <input type="text" formControlName="industry" 
+                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                         placeholder="Technology, Finance, Healthcare...">
+                </div>
+
+                <!-- Employment Start Date (Both Employed and Self-Employed) -->
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                  <input type="date" formControlName="employmentStartDate" 
+                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Message when Unemployed -->
+          <div *ngIf="form.get('currentEmploymentStatus')?.value === 'Unemployed'" 
+               class="md:col-span-2">
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+              <p class="text-sm text-gray-500">No employment details to display</p>
+              <p class="text-xs text-gray-400 mt-1">Update your status when you find employment</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <!-- Email Notifications -->
       <div class="mb-4 md:col-span-2">
         <label class="flex items-center cursor-pointer">
@@ -162,39 +241,94 @@
         </label>
       </div>
 
-     <!-- CV Upload -->
-<div class="mb-4 md:col-span-2">
-  <label class="block text-sm font-medium text-gray-700 mb-1">CV / Resume</label>
+      <!-- Documents Section -->
+      <div class="mb-4 md:col-span-2">
+        <h3 class="text-sm font-semibold text-gray-700 border-b border-gray-200 pb-2 mb-3">Documents</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-  @if (existingCvPath && !selectedCvFile) {
-    <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 mb-2">
-      <a [href]="existingCvPath" target="_blank" class="text-sm text-blue-800 hover:underline font-medium flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        Current CV on file
-      </a>
-      <span class="text-xs text-gray-400">Upload a new file below to replace it</span>
-    </div>
-  }
+          <!-- CV Upload -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">CV / Resume</label>
 
-  @if (selectedCvFile) {
-    <div class="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 mb-2">
-      <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-      <span class="text-sm text-blue-800 font-medium">{{ selectedCvFile.name }}</span>
-      <span class="text-xs text-gray-500">(will be uploaded when you save)</span>
-    </div>
-  }
+            <div *ngIf="existingCvPath && !selectedCvFile" class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 mb-2">
+              <a [href]="existingCvPath" target="_blank" class="text-sm text-blue-800 hover:underline font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Current CV on file
+              </a>
+              <span class="text-xs text-gray-400">Upload to replace</span>
+            </div>
 
-  <div class="flex items-center gap-3">
-    <input type="file" (change)="onCvSelected($event)"
-           accept=".pdf,.doc,.docx"
-           class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-    <span class="text-xs text-gray-400">PDF, DOC, DOCX (Max 5MB)</span>
-  </div>
-</div>
+            <div *ngIf="selectedCvFile" class="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 mb-2">
+              <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span class="text-sm text-blue-800 font-medium">{{ selectedCvFile.name }}</span>
+            </div>
+
+            <input type="file" (change)="onCvSelected($event)"
+                   accept=".pdf,.doc,.docx"
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            <p class="text-xs text-gray-400 mt-1">PDF, DOC, DOCX (Max 5MB)</p>
+          </div>
+
+          <!-- Transcript Upload (for both student and alumni) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Academic Transcript</label>
+
+            <div *ngIf="existingTranscriptPath && !selectedTranscriptFile" class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 mb-2">
+              <a [href]="existingTranscriptPath" target="_blank" class="text-sm text-blue-800 hover:underline font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                View Current Transcript
+              </a>
+              <span class="text-xs text-gray-400">Upload to replace</span>
+            </div>
+
+            <div *ngIf="selectedTranscriptFile" class="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 mb-2">
+              <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span class="text-sm text-blue-800 font-medium">{{ selectedTranscriptFile.name }}</span>
+            </div>
+
+            <input type="file" (change)="onTranscriptSelected($event)"
+                   accept=".pdf"
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            <p class="text-xs text-gray-400 mt-1">PDF (Max 5MB)</p>
+          </div>
+
+          <!-- Diploma Upload (Only for alumni) -->
+          <div *ngIf="isAlumni" class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Diploma Certificate</label>
+
+            <div *ngIf="existingDiplomaPath && !selectedDiplomaFile" class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 mb-2">
+              <a [href]="existingDiplomaPath" target="_blank" class="text-sm text-blue-800 hover:underline font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                View Current Diploma
+              </a>
+              <span class="text-xs text-gray-400">Upload to replace</span>
+            </div>
+
+            <div *ngIf="selectedDiplomaFile" class="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 mb-2">
+              <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span class="text-sm text-blue-800 font-medium">{{ selectedDiplomaFile.name }}</span>
+            </div>
+
+            <input type="file" (change)="onDiplomaSelected($event)"
+                   accept=".pdf"
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            <p class="text-xs text-gray-400 mt-1">PDF (Max 5MB)</p>
+          </div>
+
+        </div>
+      </div>
 
     </div>
 

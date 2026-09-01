@@ -56,4 +56,7 @@ getMyProgramApplications(): Observable<any> {
   return this.http.get(`${this.apiUrl}/my-applications`);
 }
 
+getProgramApplicationById(applicationId: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/applications/${applicationId}`);
+}
 }

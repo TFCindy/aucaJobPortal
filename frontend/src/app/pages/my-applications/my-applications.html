@@ -12,6 +12,17 @@
     </div>
   </div>
 
+ 
+<div class="mb-4">
+  <a routerLink="/student/program-applications" 
+     class="inline-flex items-center gap-2 text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>
+    View Program Applications
+  </a>
+</div>
+
   <div *ngIf="successMessage" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
     {{ successMessage }}
     <button (click)="clearMessages()" class="float-right font-bold">x</button>

@@ -1,5 +1,5 @@
-
-import { RouterLink } from '@angular/router';import { Component, ChangeDetectorRef } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
@@ -21,13 +21,13 @@ export class RegisterStudent {
     private fb: FormBuilder,
     private authService: Auth,
     private router: Router,
-    private cdr: ChangeDetectorRef   // ← add this
+    private cdr: ChangeDetectorRef
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       fullName: ['', Validators.required],
       studentId: ['', Validators.required],
-      phone: [null, Validators.required],
+      phone: ['', Validators.required],
       isAlumni: [false, Validators.required],
       password: ['', [Validators.required, Validators.minLength(8)]],
       program: ['', Validators.required]
@@ -51,12 +51,15 @@ export class RegisterStudent {
       next: (response) => {
         this.isSubmitting = false;
         this.successMessage = 'Registration successful! Please check your email.';
-        this.cdr.detectChanges();   // ← force re-render
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 3000);
       },
       error: (err) => {
         this.isSubmitting = false;
         this.errorMessage = err.error?.message || 'Registration failed. Please try again.';
-        this.cdr.detectChanges();   // ← force re-render
+        this.cdr.detectChanges();
       }
     });
   }

@@ -97,7 +97,7 @@
                             <p class="text-sm font-medium text-gray-800">{{ userFullName }}</p>
                             <p class="text-xs text-gray-500">{{ userRole | titlecase }}</p>
                         </div>
-                        <a routerLink="/student/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                        <a [routerLink]="getProfilePath()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
   Profile
 </a>
                         <a routerLink="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">

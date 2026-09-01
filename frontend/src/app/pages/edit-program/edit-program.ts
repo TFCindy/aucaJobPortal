@@ -23,7 +23,7 @@ export class EditProgram implements OnInit {
   imagePreview: string | null = null;
   existingImageUrl: string | null = null;
   programId: number = 0;
-  program: any = null; // ✅ Changed from CareerProgram to any
+  program: any = null; //  Changed from CareerProgram to any
   publishNow = false;
 
   constructor(
@@ -82,7 +82,7 @@ export class EditProgram implements OnInit {
     });
   }
 
-  populateForm(program: any) { // ✅ Changed from CareerProgram to any
+  populateForm(program: any) { //  Changed from CareerProgram to any
     if (!program) return;
 
     // Set publishNow based on current status

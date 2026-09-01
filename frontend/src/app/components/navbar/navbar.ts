@@ -69,6 +69,7 @@ export class Navbar implements OnInit {
       { label: 'Dashboard', path: '/counselor/dashboard' },
       { label: 'My Programs', path: '/counselor/programs' },
       { label: 'Applications', path: '/counselor/applications' }
+      
     ];
   }else {
       this.navLinks = [
@@ -81,6 +82,16 @@ export class Navbar implements OnInit {
       ];
     }
   }
+
+  getProfilePath(): string {
+  if (this.userRole === 'career_counselor') {
+    return '/counselor/profile';
+  } else if (this.userRole === 'employer') {
+    return '/employer/profile';
+  } else {
+    return '/student/profile';
+  }
+}
 
   getInitials(fullName: string): string {
     const parts = fullName.trim().split(' ');

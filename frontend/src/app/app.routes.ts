@@ -32,6 +32,10 @@ import { CreateProgram } from './pages/create-program/create-program';
 import { EditProgram } from './pages/edit-program/edit-program';
 import { CounselorApplications } from './pages/counselor-applications/counselor-applications';
 import { StudentPrograms } from './pages/student-programs/student-programs';
+import { CounselorProfile } from './pages/counselor-profile/counselor-profile';
+import { EmployerProfile } from './pages/employer-profile/employer-profile';
+import { MyProgramApplications } from './pages/my-program-applications/my-program-applications';
+import { ProgramApplicationDetail } from './pages/program-application-detail/program-application-detail';
 
 
 export const routes: Routes = [
@@ -50,9 +54,12 @@ export const routes: Routes = [
   { path: 'employer/applications', component: EmployerApplications, canActivate: [authGuard] },
   { path: 'employer/applications/:id', component: ApplicationDetails, canActivate: [authGuard] },
   { path: 'employer/jobs/:id/edit', component: UpdateJob, canActivate: [authGuard] },
+  { path: 'employer/profile', component: EmployerProfile, canActivate: [authGuard] },
   {path: 'student/jobs', component: StudentJobs,canActivate: [authGuard]},
   { path: 'student/applications', component: MyApplications,canActivate: [authGuard]},
-  { path: 'student/applications/:id', component: ApplicationDetailStudent,canActivate: [authGuard]},
+    { path: 'student/applications/:id', component: ApplicationDetailStudent,canActivate: [authGuard]},
+  {  path: 'student/program-applications',  component: MyProgramApplications,canActivate: [authGuard]},
+  {  path: 'student/program-applications/:id',  component: ProgramApplicationDetail, canActivate: [authGuard]},
   { path: 'student/programs', component: StudentPrograms },
   {path: 'student/saved-jobs',component: SavedJobs,canActivate: [authGuard]},
   {path: 'jobs/:id',component: JobDetailsStudent,canActivate: [authGuard]},
@@ -63,6 +70,7 @@ export const routes: Routes = [
   {path: 'counselor/programs/create', component: CreateProgram, canActivate: [authGuard]},
   { path: 'counselor/programs/:id/edit',component: EditProgram },
   { path: 'counselor/applications',component: CounselorApplications},
+  { path: 'counselor/profile', component: CounselorProfile},
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];

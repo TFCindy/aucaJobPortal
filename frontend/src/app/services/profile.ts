@@ -26,6 +26,15 @@ export class ProfileService {
   }
 
   updateEmployerProfile(payload: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/employer`, payload);
+    return this.http.patch(`${this.apiUrl}/employer`, payload);
+  }
+
+   // ─── CAREER COUNSELOR ───
+  getCareerCounselorProfile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/counselor`);
+  }
+
+  updateCareerCounselorProfile(payload: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/counselor`, payload);
   }
 }
