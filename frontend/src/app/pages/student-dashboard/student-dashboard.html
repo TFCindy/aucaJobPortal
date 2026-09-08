@@ -5,6 +5,7 @@
 
   <h1 class="text-2xl font-bold text-gray-800">Welcome back, {{ userFullName }}!</h1>
 
+  <!-- Notifications - White -->
   @if (recentNotifications.length > 0) {
   <div class="bg-white rounded-xl shadow p-5 mt-4">
     <div class="flex justify-between items-center mb-3">
@@ -32,8 +33,10 @@
     </div>
   </div>
 }
+
+  <!-- Profile Completion - Gray -->
   @if (profileCompletionPercent < 100) {
-    <div class="bg-white rounded-xl shadow p-5 mt-4">
+    <div class="bg-gray-50 rounded-xl shadow p-5 mt-4">
       <div class="flex justify-between items-center mb-2">
         <span class="text-sm font-medium text-gray-700">Your profile is {{ profileCompletionPercent }}% complete</span>
         <a routerLink="/student/profile" class="text-sm text-blue-800 hover:underline font-medium">Complete now →</a>
@@ -44,6 +47,7 @@
     </div>
   }
 
+  <!-- Stats - White -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
     <div class="bg-white rounded-xl shadow p-4 text-center">
       <p class="text-2xl font-bold text-yellow-600">{{ applicationStats.pending }}</p>
@@ -64,9 +68,9 @@
   </div>
 
   <!-- ============================================ -->
-  <!-- RECENT PROGRAMS SECTION (NEW) -->
+  <!-- RECENT PROGRAMS SECTION - Gray -->
   <!-- ============================================ -->
-  <div class="mt-8">
+  <div class="bg-gray-50 rounded-xl shadow p-5 mt-8">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold text-gray-800">Available Programs</h2>
       <a routerLink="/student/programs" class="text-sm text-blue-800 hover:underline font-medium">View All Programs →</a>
@@ -86,45 +90,44 @@
             </div>
           }
           @if (!program.imageUrl) {
-            <div class="h-40 bg-linear-to-r from-blue-50 to-indigo-50 flex items-center justify-center">
+            <div class="h-40 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-center">
             </div>
           }
           
-          <!-- Program Content -->
-          <div class="p-4">
-            
-            
-            <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ program.shortDescription || program.description | slice:0:100 }}</p>
-            
-            <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
-              <span> {{ formatDate(program.startDate) }}</span>
-              <span>•</span>
-              <span> {{ program.currentParticipants || 0 }}/{{ program.maxParticipants }}</span>
-            </div>
+         <!-- Program Content -->
+<div class="p-4">
+  <h3 class="font-semibold text-gray-800">{{ program.title }}</h3>
+  <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ program.shortDescription || program.description | slice:0:100 }}</p>
+  
+  <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
+    <span>{{ formatDate(program.startDate) }}</span>
+    <span>•</span>
+    <span>{{ program.currentParticipants || 0 }}/{{ program.maxParticipants }}</span>
+  </div>
 
-            <div class="flex flex-wrap gap-1.5 mt-2">
-              <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">{{ getTypeLabel(program.type) }}</span>
-              <span *ngIf="program.isOnline" class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full">Online</span>
-              <span *ngIf="!program.isOnline && program.location" class="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full">{{ program.location }}</span>
-              <span *ngIf="program.isFree" class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded-full">Free</span>
-            </div>
+  <div class="flex flex-wrap gap-1.5 mt-2">
+    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">{{ getTypeLabel(program.type) }}</span>
+    <span *ngIf="program.isOnline" class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full">Online</span>
+    <span *ngIf="!program.isOnline && program.location" class="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full">{{ program.location }}</span>
+    <span *ngIf="program.isFree" class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded-full">Free</span>
+  </div>
 
-            <div class="mt-3 pt-3 border-t border-gray-100">
-              <a [routerLink]="['/student/programs', program.id]" 
-                 class="block text-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-                View Details
-              </a>
-            </div>
-          </div>
+  <div class="mt-3 pt-3 border-t border-gray-100">
+    <a [routerLink]="['/student/programs', program.id]" 
+       class="block text-center bg-blue-800 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+      View Details
+    </a>
+  </div>
+</div>
         </div>
       }
     </div>
   </div>
 
   <!-- ============================================ -->
-  <!-- RECENT JOBS SECTION -->
+  <!-- RECENT JOBS SECTION - White -->
   <!-- ============================================ -->
-  <div class="mt-8">
+  <div class="bg-white rounded-xl shadow p-5 mt-8">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold text-gray-800">Recent Job Postings</h2>
       <a routerLink="/student/jobs" class="text-sm text-blue-800 hover:underline font-medium">View All Jobs →</a>

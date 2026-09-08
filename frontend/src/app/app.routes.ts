@@ -36,9 +36,11 @@ import { CounselorProfile } from './pages/counselor-profile/counselor-profile';
 import { EmployerProfile } from './pages/employer-profile/employer-profile';
 import { MyProgramApplications } from './pages/my-program-applications/my-program-applications';
 import { ProgramApplicationDetail } from './pages/program-application-detail/program-application-detail';
+import { Landing } from './pages/landing/landing';
 
 
 export const routes: Routes = [
+  { path: '', component: Landing },
   { path: 'register/student', component: RegisterStudent },
   { path: 'register/employer', component: RegisterEmployer },
   { path: 'login', component: Login },

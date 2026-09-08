@@ -125,19 +125,19 @@ togglePermission(permission: any) {
 
    getPermissionBadge(permission: string): string {
     const badgeMap: Record<string, string> = {
-      'manage_users': 'bg-blue-100 text-blue-700',
-      'manage_roles': 'bg-blue-100 text-blue-700',
-      'manage_counselors': 'bg-blue-100 text-blue-700',
-      'view_counselors': 'bg-blue-100 text-blue-700',
-      'view_audit_logs': 'bg-blue-100 text-blue-700',
-      'approve_jobs': 'bg-blue-100 text-blue-700',
-      'apply_jobs': 'bg-blue-100 text-blue-700',
-      'save_jobs': 'bg-blue-100 text-blue-700',
-      'post_jobs': 'bg-blue-100 text-blue-700',
-      'view_applications': 'bg-blue-100 text-blue-700',
-      'send_messages': 'bg-blue-100 text-blue-700',
-      'manage-programs':'bg-blue-100 text-blue-700',
-      'view_reports': 'bg-blue-100 text-blue-700'
+      'manage_users': 'bg-gray-100 text-gray-700',
+      'manage_roles': 'bg-gray-100 text-gray-700',
+      'manage_counselors': 'bg-gray-100 text-gray-700',
+      'view_counselors': 'bg-gray-100 text-gray-700',
+      'view_audit_logs': 'bg-gray-100 text-gray-700',
+      'approve_jobs': 'bg-gray-100 text-gray-700',
+      'apply_jobs': 'bg-gray-100 text-gray-700',
+      'save_jobs': 'bg-gray-100 text-gray-700',
+      'post_jobs': 'bg-gray-100 text-gray-700',
+      'view_applications': 'bg-gray-100 text-gray-700',
+      'send_messages': 'bg-gray-100 text-gray-700',
+      'manage-programs':'bg-gray-100 text-gray-700',
+      'view_reports': 'bg-gray-100 text-gray-700'
     };
     return badgeMap[permission] || 'bg-gray-100 text-gray-700';
   }

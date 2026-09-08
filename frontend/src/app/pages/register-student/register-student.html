@@ -21,7 +21,7 @@
               <input type="email"
                 formControlName="email"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                placeholder="you@example.com">
+                placeholder="">
              <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" 
                    class="text-red-500 text-sm mt-1">
                   <span *ngIf="form.get('email')?.errors?.['required']">Email is required</span>
@@ -35,7 +35,7 @@
               <input type="text"
                 formControlName="fullName"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                placeholder="John Doe">
+                placeholder="">
                <div *ngIf="form.get('fullName')?.invalid && form.get('fullName')?.touched" 
                    class="text-red-500 text-sm mt-1">
                   Full name is required
@@ -48,7 +48,7 @@
               <input type="text"
                 formControlName="studentId"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                placeholder="S123456">
+                placeholder="">
               <div *ngIf="form.get('studentId')?.invalid && form.get('studentId')?.touched" 
                    class="text-red-500 text-sm mt-1">
                   Student ID is required
@@ -61,7 +61,7 @@
               <input type="tel"
                 formControlName="phone"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                placeholder="0788888888">
+                placeholder="">
               <div *ngIf="form.get('phone')?.invalid && form.get('phone')?.touched" 
                    class="text-red-500 text-sm mt-1">
                   Phone number is required

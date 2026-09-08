@@ -1,129 +1,144 @@
 <app-navbar></app-navbar>
 
-<div class="max-w-7xl mx-auto px-4 py-8">
+<div class="bg-white">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        @if (isLoading) {
+            <div class="flex justify-center items-center h-64">
+                <div class="text-gray-500 text-sm">Loading dashboard...</div>
+            </div>
+        }
+        @else if (errorMessage) {
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4">
+                {{ errorMessage }}
+            </div>
+        }
+        @else {
+            <!-- Header Section -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Welcome back, {{ companyName || 'Employer' }}!</h1>
+                <p class="text-gray-500 text-sm mt-2">Manage your jobs and applications from here</p>
+            </div>
 
-    
-    @if (isLoading) {
-        <div class="flex justify-center items-center h-64">
-            <div class="text-gray-500 text-sm">Loading dashboard...</div>
-        </div>
-    }
-    @else if (errorMessage) {
-        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4">
-            {{ errorMessage }}
-        </div>
-    }
-    @else {
-
-        <h1 class="text-2xl font-bold text-gray-800">Welcome back, {{ companyName || 'Employer' }}!</h1>
-
-        @if (profileCompletionPercent < 100) {
-            <div class="bg-white rounded-xl shadow p-5 mt-4">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-700">
-                        Your profile is {{ profileCompletionPercent }}% complete
-                    </span>
-                    <a routerLink="/employer/profile" class="text-sm text-blue-800 hover:underline font-medium">
-                        Complete now →
-                    </a>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-800 h-2 rounded-full transition-all" 
-                         [style.width.%]="profileCompletionPercent">
+            @if (profileCompletionPercent < 100) {
+                <div class="bg-blue-50 rounded-xl shadow-sm border border-blue-100 p-6 mb-8 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="font-semibold text-gray-800">Complete Your Profile</p>
+                            <p class="text-sm text-gray-600 mt-1">Your profile is {{ profileCompletionPercent }}% complete</p>
+                        </div>
+                        <a routerLink="/employer/profile" class="text-sm text-blue-800 hover:text-blue-900 font-semibold">
+                            Complete now →
+                        </a>
                     </div>
+                    <div class="w-full bg-blue-200 rounded-full h-2.5">
+                        <div class="bg-blue-800 h-2.5 rounded-full transition-all duration-500" 
+                             [style.width.%]="profileCompletionPercent">
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Live Jobs</p>
+                    <p class="text-3xl font-bold text-blue-600 mt-3">{{ activeJobsCount }}</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">New This Week</p>
+                    <p class="text-3xl font-bold text-green-600 mt-3">{{ newApplications }}</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">To Review</p>
+                    <p class="text-3xl font-bold text-yellow-600 mt-3">{{ pendingCount }}</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Hired</p>
+                    <p class="text-3xl font-bold text-purple-600 mt-3">{{ hiredCount }}</p>
                 </div>
             </div>
         }
-
-       
-<!-- Stats Cards - Actionable Stats -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-    <div class="bg-white rounded-xl shadow p-4 text-center">
-        <p class="text-2xl font-bold text-blue-600">{{ activeJobsCount }}</p>
-        <p class="text-sm text-gray-500 mt-1">Live Jobs</p>
-    </div>
-    <div class="bg-white rounded-xl shadow p-4 text-center">
-        <p class="text-2xl font-bold text-green-600">{{ newApplications }}</p>
-        <p class="text-sm text-gray-500 mt-1">New This Week</p>
-    </div>
-    <div class="bg-white rounded-xl shadow p-4 text-center">
-        <p class="text-2xl font-bold text-yellow-600">{{ pendingCount }}</p>
-        <p class="text-sm text-gray-500 mt-1">To Review</p>
-    </div>
-    <div class="bg-white rounded-xl shadow p-4 text-center">
-        <p class="text-2xl font-bold text-purple-600">{{ hiredCount }}</p>
-        <p class="text-sm text-gray-500 mt-1">Hired</p>
     </div>
 </div>
 
-        <div class="mt-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-800">Recent Applications</h2>
-                <a routerLink="/employer/applications" class="text-sm text-blue-800 hover:underline font-medium">
-                    View All Applications →
+<!-- Recent Applications Section - Gray Background -->
+<div class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-xl font-bold text-gray-800">Recent Applications</h2>
+                <a routerLink="/employer/applications" class="text-sm text-blue-800 hover:text-blue-900 font-semibold">
+                    View All →
                 </a>
             </div>
 
             @if (recentApplications.length === 0) {
-                <p class="text-gray-500 text-sm">No applications received yet.</p>
+                <div class="bg-white rounded-xl border border-gray-200 p-6 text-center">
+                    <p class="text-gray-500 text-sm">No applications received yet.</p>
+                </div>
+            } @else {
+                <div class="space-y-3">
+                    @for (app of recentApplications; track app.id) {
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">{{ app.candidateName || app.student?.user?.fullName }}</p>
+                                <p class="text-sm text-gray-600 mt-1">{{ app.jobTitle || app.job?.title }}</p>
+                                <p class="text-xs text-gray-400 mt-2">Applied {{ app.appliedAt | date:'mediumDate' }}</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs px-3 py-1.5 rounded-full font-medium {{ getStatusBadgeClass(app.status) }}">
+                                    {{ app.status | titlecase }}
+                                </span>
+                                <a [routerLink]="['/employer/applications', app.id]" 
+                                   class="text-sm text-blue-800 hover:text-blue-900 font-semibold">
+                                    Review →
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
             }
-
-            <div class="space-y-3">
-                @for (app of recentApplications; track app.id) {
-                    <div class="bg-white rounded-xl shadow p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
-                        <div>
-                            <p class="font-semibold text-gray-800">{{ app.candidateName || app.student?.user?.fullName }}</p>
-                            <p class="text-sm text-gray-500">{{ app.jobTitle || app.job?.title }}</p>
-                            <p class="text-xs text-gray-400 mt-1">Applied: {{ app.appliedAt | date:'mediumDate' }}</p>
-                        </div>
-                        <div class="flex items-center gap-3 mt-2 md:mt-0">
-                            <span class="text-xs px-3 py-1 rounded-full {{ getStatusBadgeClass(app.status) }}">
-                                {{ app.status | titlecase }}
-                            </span>
-                            <a [routerLink]="['/employer/applications', app.id]" 
-                               class="text-sm text-blue-800 hover:underline font-medium">
-                                Review →
-                            </a>
-                        </div>
-                    </div>
-                }
-            </div>
         </div>
+    </div>
+</div>
 
-        <div class="mt-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-800">Your Recent Jobs</h2>
-                <a routerLink="/employer/jobs" class="text-sm text-blue-800 hover:underline font-medium">
-                    View All Jobs →
+<!-- Recent Jobs Section - White Background -->
+<div class="bg-white">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-xl font-bold text-gray-800">Your Recent Jobs</h2>
+                <a routerLink="/employer/jobs" class="text-sm text-blue-800 hover:text-blue-900 font-semibold">
+                    View All →
                 </a>
             </div>
 
             @if (recentJobs.length === 0) {
-                <p class="text-gray-500 text-sm">You haven't posted any jobs yet.</p>
-            }
-
-            <div class="grid md:grid-cols-3 gap-4">
-                @for (job of recentJobs; track job.id) {
-                    <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition">
-                        <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
-                        <p class="text-sm text-gray-500 mt-1">{{ job.location || 'Location not specified' }}</p>
-                        <p class="text-sm text-gray-500">Total Applications: {{ job.applicationCount || 0 }}</p>
-                        <p class="text-xs text-gray-400 mt-1">Posted: {{ job.postedAt | date:'mediumDate' }}</p>
-                        <div class="flex gap-2 mt-3">
-                            <a [routerLink]="['/employer/jobs', job.id]" 
-                               class="text-xs bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded transition">
-                                View
-                            </a>
-                            <a [routerLink]="['/employer/jobs', job.id, 'applications']" 
-                               class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded transition">
-                                Applications
-                            </a>
+                <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 text-center">
+                    <p class="text-gray-500 text-sm">You haven't posted any jobs yet.</p>
+                </div>
+            } @else {
+                <div class="grid md:grid-cols-3 gap-4">
+                    @for (job of recentJobs; track job.id) {
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition flex flex-col">
+                            <h3 class="font-bold text-gray-800 text-lg">{{ job.title }}</h3>
+                            <p class="text-sm text-gray-600 mt-2">{{ job.location || 'Location not specified' }}</p>
+                            <p class="text-sm text-gray-600 mt-1">{{ job.applicationCount || 0 }} Applications</p>
+                            <p class="text-xs text-gray-400 mt-3">Posted {{ job.postedAt | date:'mediumDate' }}</p>
+                            <div class="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+                                <a [routerLink]="['/employer/jobs', job.id]" 
+                                   class="flex-1 text-xs font-semibold bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-lg transition text-center">
+                                    View
+                                </a>
+                                <a [routerLink]="['/employer/jobs', job.id, 'applications']" 
+                                   class="flex-1 text-xs font-semibold bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-lg transition text-center">
+                                    Applications
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                }
-            </div>
+                    }
+                </div>
+            }
         </div>
-
-    }
-
+    </div>
 </div>

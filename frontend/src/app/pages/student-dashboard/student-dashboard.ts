@@ -90,7 +90,7 @@ export class StudentDashboard implements OnInit {
   loadRecentPrograms() {
     this.programService.getAvailablePrograms().subscribe({
       next: (response) => {
-        this.recentPrograms = (response.data || []).slice(0, 3);
+        this.recentPrograms = (response.data || []).slice(0, 4);
         this.cdr.detectChanges();
       },
       error: () => {}
