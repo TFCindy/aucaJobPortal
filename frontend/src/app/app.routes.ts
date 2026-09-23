@@ -37,6 +37,8 @@ import { EmployerProfile } from './pages/employer-profile/employer-profile';
 import { MyProgramApplications } from './pages/my-program-applications/my-program-applications';
 import { ProgramApplicationDetail } from './pages/program-application-detail/program-application-detail';
 import { Landing } from './pages/landing/landing';
+import { ResetPassword } from './pages/reset-password/reset-password';
+import { ForgotPassword } from './pages/forgot-password/forgot-password';
 
 
 export const routes: Routes = [
@@ -46,6 +48,8 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'verify-email', component: VerifyEmail },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'forgot-password', component: ForgotPassword },
+  { path: 'reset-password', component: ResetPassword },
   {path: 'admin',component: AdminLayout,canActivate: [authGuard],children: [{ path: 'dashboard', component: AdminDashboard },{ path: 'users', component: AdminUsers },  {path: 'roles',component: AdminRoles},{ path: 'job-approval',component: AdminJobApproval},{ path: 'counselors',component: AdminCounselors}]},
   { path: 'student/dashboard', component: StudentDashboard, canActivate: [authGuard] },
   { path: 'employer/dashboard', component: EmployerDashboard, canActivate: [authGuard] }, 
